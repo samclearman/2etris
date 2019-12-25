@@ -1,0 +1,20 @@
+{
+  "name": "2etris",
+  "version": "1.0.0",
+  "description": "A fun multiplayer game",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Clearman",
+  "license": "ISC",
+  "dependencies": {
+    "@types/seedrandom": "^2.4.28",
+    "firebase": "^7.5.2",
+    "seedrandom": "^3.0.5",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
