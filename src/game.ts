@@ -2,7 +2,7 @@ import * as seedrandom from 'seedrandom';
 import { EventType, Init, Spawn, Move, Rotate, Drop, Fall } from './events';
 
 const gridWidth = 10;
-export const gridHeight = 20;
+export const gridHeight = 30;
 
 export enum Player {
   One,
@@ -275,6 +275,16 @@ export function newGame(e: Init) {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -338,7 +348,7 @@ function freeze(game, omino) {
     // Todo: the grid should extend beyond the visible area, this check should happen at the end of freeze
     if (y < 0 || y >= gridHeight) {
       game.over = true;
-      return;
+      continue;
     }
     game.grid[y][x] = omino.player;
     yToCheck.add(y);
