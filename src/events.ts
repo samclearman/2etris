@@ -73,3 +73,18 @@ export function processEvent(e: E, game) {
   }
   return eventHandlers[e.t](e, game);
 }
+
+function prettyEvent(e, start = 0) {
+  const pretty = `t ${(e.time - start) / 1000}`
+  console.log(pretty);
+}
+
+export function prettyEvents(events: E[]) {
+  let start;
+  for (const e of events) {
+    if (!start && e.time) {
+      start = e.time;
+    }
+    prettyEvent(e, start);
+  }
+}

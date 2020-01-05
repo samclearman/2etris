@@ -4,7 +4,7 @@ import "firebase/database";
 
 import { newSession, makeSession, computeSession } from './session';
 import { registerControls, renderSession } from './render';
-import { E } from './events';
+import { E, prettyEvents } from './events';
 
 // Initialize Firebase
 var config = {
@@ -52,7 +52,12 @@ function game() {
   
   const events: E[] = [];
   // @ts-ignore
-  if(self.DEBUG_EVENTS) self.DEBUG_EVENTS = events;
+  if (self.DEBUG_EVENTS) {
+    // @ts-ignore
+    self.DEBUG_EVENTS = events;
+    // @ts-ignore
+    self.prettyEvents = prettyEvents;
+  }
   const fbEvents = firebase.database().ref(`sessions/${u.searchParams.get('session')}`);
   fbEvents.on("child_added", function(snapshot) {
     const e = snapshot.val();
@@ -64,7 +69,9 @@ function game() {
   // @ts-ignore
   if(self.DEBUG_SESSION) self.DEBUG_SESSION = session;
   const loop = () => {
-    computeSession(session, events, Date.now());
+    // @ts-ignore
+    const t = self.DEBUG_TIME || Date.now();
+    computeSession(session, events, t);
     renderSession({blackButton, whiteButton, scoreOutput, linesOutput, overlay, ctx}, session)
     setTimeout(loop, 10);
   };

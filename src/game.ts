@@ -253,7 +253,7 @@ function level(game) {
 
 function speed(game) {
   const l = level(game) - 1;
-  return 1000 * ((0.8 * (l * 0.007)) ** l);
+  return 1000 * ((0.8 - (l * 0.007)) ** l);
 }
 
 export function newGame(e: Init) {

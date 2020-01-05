@@ -6,20 +6,24 @@ export enum SessionState {
   Over,
 }
 
+const blankSession = {
+  state: SessionState.Claiming,
+  users: [] as string[],
+  claims: {
+    [Player.One]: null,
+    [Player.Two]: null,
+  },
+  game: null
+};
+
 export function newSession(me) {
-  return {
+  return Object.assign({
     me,
-    state: SessionState.Claiming,
-    users: [] as string[],
-    claims: {
-      [Player.One]: null,
-      [Player.Two]: null,
-    },
-    game: null,
-  }
+  }, blankSession);
 }
 
 export function computeSession(session, events: E[], end: number) {
+  Object.assign(session, blankSession);
   let i = 0;
   const nextEvent = function() {
     if (session.state !== SessionState.Playing) {
