@@ -1,3 +1,3 @@
-Build: `npx webpack`
+Build: `yarn; yarn build` or `npm install; npm build`
 
-Serve: `cd src && python3 -m http.server 8000`
+Serve: `python3 -m http.server 8000` -d dist
