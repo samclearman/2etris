@@ -10,8 +10,8 @@ const playerColors = {
 };
 
 const playerGhostColors = {
-  [Player.One]: "darkgray",
-  [Player.Two]: "lightgray"
+  [Player.One]: "#DDDDDD",
+  [Player.Two]: "#333333"
 };
 
 
