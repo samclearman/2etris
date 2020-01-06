@@ -1,4 +1,4 @@
-import { Player, gridHeight, globalCoordPositions } from './game';
+import { Player, gridHeight, globalCoordPositions, globalCoordGhostPositions } from './game';
 import { SessionState } from './session';
 import { EventType } from './events';
 
@@ -8,6 +8,12 @@ const playerColors = {
   [Player.One]: "black",
   [Player.Two]: "white"
 };
+
+const playerGhostColors = {
+  [Player.One]: "darkgray",
+  [Player.Two]: "lightgray"
+};
+
 
 const controls = {
   // Test controls
@@ -64,12 +70,17 @@ function render(ctx, game, transform) {
     }
   }
   for (const p in Player) {
-    ctx.fillStyle = playerColors[p];
     const o = game.activeOminos[p];
     if (!o) {
       continue;
     }
+    const ghostPositions = globalCoordGhostPositions(game, o, { dx: 0, dy: 0 }).map(p => transform(p));
+    ctx.fillStyle = playerGhostColors[p];
+    for (const { x, y } of ghostPositions) {
+      ctx.fillRect(x * w, y * w, w, w);
+    }
     const positions = globalCoordPositions(o, { dx: 0, dy: 0 }).map(p => transform(p));
+    ctx.fillStyle = playerColors[p];
     for (const { x, y } of positions) {
       ctx.fillRect(x * w, y * w, w, w);
     }
