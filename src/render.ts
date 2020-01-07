@@ -51,6 +51,14 @@ const controls = {
   ArrowDown: {
     t: EventType.Drop,
   },
+  Space: [
+    {
+      t: EventType.Drop,
+    },
+    {
+      t: EventType.Fall,
+    }
+  ],
 };
 
 function identity({x,y}) {
@@ -117,9 +125,13 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
       return;
     }
     const player = session.claims[Player.One] === me ? Player.One : Player.Two
-    fbEvents.push(
-      createEvent(Object.assign({ player }, controls[e.code.toString()]))
-    );
+    let events = controls[e.code.toString()];
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    for (event of events) {
+      fbEvents.push(Object.assign({ player }, event));
+    }
     e.preventDefault();
   });
   blackButton.addEventListener('change', function(e) {
