@@ -50,7 +50,7 @@ function game() {
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   
-  const events: E[] = [];
+  let events: E[] = [];
   // @ts-ignore
   if (self.DEBUG_EVENTS) {
     // @ts-ignore
@@ -59,11 +59,14 @@ function game() {
     self.prettyEvents = prettyEvents;
   }
   const fbEvents = firebase.database().ref(`sessions/${u.searchParams.get('session')}`);
-  fbEvents.on("child_added", function(snapshot) {
-    const e = snapshot.val();
-    events.push(e);
-  });
-
+  // fbEvents.on("child_added", function(snapshot) {
+  //   const e = snapshot.val();
+  //   events.push(e);
+  // });
+  fbEvents.on('value', function (snapshot) {
+    events = Object.values(snapshot.val());
+    events.sort((e1, e2) => e1.time - e2.time);
+  })
   registerControls({blackButton, whiteButton, fbEvents, session});
 
   // @ts-ignore
@@ -71,6 +74,8 @@ function game() {
   const loop = () => {
     // @ts-ignore
     const t = self.DEBUG_TIME || Date.now();
+    // @ts-ignore
+    if (self.DEBUG_EVENTS) self.DEBUG_EVENTS = events;
     computeSession(session, events, t);
     renderSession({blackButton, whiteButton, scoreOutput, linesOutput, overlay, ctx}, session)
     setTimeout(loop, 10);
