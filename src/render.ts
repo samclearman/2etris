@@ -1,6 +1,6 @@
-import { Player, gridHeight, globalCoordPositions } from './game';
+import { Player, gridHeight, globalCoordPositions, globalCoordGhostPositions } from './game';
 import { SessionState } from './session';
-import { EventType } from './events';
+import { EventType, createEvent } from './events';
 
 const w = 20;
 
@@ -8,6 +8,12 @@ const playerColors = {
   [Player.One]: "black",
   [Player.Two]: "white"
 };
+
+const playerGhostColors = {
+  [Player.One]: "#DDDDDD",
+  [Player.Two]: "#333333"
+};
+
 
 const controls = {
   // Test controls
@@ -72,12 +78,17 @@ function render(ctx, game, transform) {
     }
   }
   for (const p in Player) {
-    ctx.fillStyle = playerColors[p];
     const o = game.activeOminos[p];
     if (!o) {
       continue;
     }
+    const ghostPositions = globalCoordGhostPositions(game, o, { dx: 0, dy: 0 }).map(p => transform(p));
+    ctx.fillStyle = playerGhostColors[p];
+    for (const { x, y } of ghostPositions) {
+      ctx.fillRect(x * w, y * w, w, w);
+    }
     const positions = globalCoordPositions(o, { dx: 0, dy: 0 }).map(p => transform(p));
+    ctx.fillStyle = playerColors[p];
     for (const { x, y } of positions) {
       ctx.fillRect(x * w, y * w, w, w);
     }
@@ -119,25 +130,23 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
       events = [events];
     }
     for (event of events) {
-      fbEvents.push(Object.assign({ time: Date.now(), player }, event));
+      fbEvents.push(Object.assign({ player }, event));
     }
     e.preventDefault();
   });
   blackButton.addEventListener('change', function(e) {
-    fbEvents.push({
+    fbEvents.push(createEvent({
       t: EventType.Claim,
-      time: Date.now(),
       user: me,
       player: Player.One,
-    });
+    }));
   });
   whiteButton.addEventListener('change', function(e) {
-    fbEvents.push({
+    fbEvents.push(createEvent({
       t: EventType.Claim,
-      time: Date.now(),
       user: me,
       player: Player.Two,
-    });
+    }));
   })
 }
 

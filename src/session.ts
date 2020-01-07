@@ -1,5 +1,5 @@
 import { Player, newGame } from './game';
-import { processEvent, E, EventType, tickEvent } from './events';
+import { processEvent, E, EventType, tickEvent, createEvent } from './events';
 export enum SessionState {
   Claiming,
   Playing,
@@ -79,20 +79,19 @@ export function computeSession(session, events: E[], end: number) {
 }
 
 export function makeSession(me, db, callback) {
-  const initialEvents: E[] = [{
-    time: Date.now(),
-    t: EventType.Init,
-    seed: Math.random().toString(),
-  }]
+  const initialEvents: E[] = [
+    createEvent({
+      t: EventType.Init,
+      seed: Math.random().toString(),
+    })]
   const u = new URL(window.location.href);
   if (u.searchParams.has('test')) {
-    initialEvents.push({
-      time: Date.now(),
+    initialEvents.push(createEvent({
       t: EventType.Claim,
       user: me,
       player: Player.One,
       both: true,
-    });
+    }));
   }
   db.ref('sessions').push(initialEvents).then(ref => {
     console.log(ref.key);

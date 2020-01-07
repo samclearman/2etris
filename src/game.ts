@@ -212,6 +212,31 @@ export function globalCoordPositions(omino: Omino, { dx, dy }: Vector) {
   return positions;
 }
 
+export function globalCoordGhostPositions(game, omino: Omino, { dx, dy }: Vector) {
+  const positions = [];
+
+  const o = copyOmino(omino);
+  while (!checkCollision(game, o, { dx, dy })) {
+    dy += 1;
+  }
+  dy -= 1;
+  const { mask, player } = o;
+  for (let i = 0; i < mask.length; i++) {
+    for (let j = 0; j < mask[i].length; j++) {
+      if (mask[i][j]) {
+        const x = j + omino.x + dx;
+        let y = i + omino.y + dy;
+        if (player === Player.Two) {
+          y = gridHeight - 1 - y;
+        }
+        positions.push({ x, y });
+      }
+    }
+  }
+  return positions;
+}
+
+
 function copyOmino(o: Omino): Omino {
   return {
     shape: o.shape,
