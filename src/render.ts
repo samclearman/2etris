@@ -1,6 +1,6 @@
 import { Player, gridHeight, globalCoordPositions, globalCoordGhostPositions } from './game';
 import { SessionState } from './session';
-import { EventType } from './events';
+import { EventType, createEvent } from './events';
 
 const w = 20;
 
@@ -118,25 +118,23 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
     }
     const player = session.claims[Player.One] === me ? Player.One : Player.Two
     fbEvents.push(
-      Object.assign({ time: Date.now(), player }, controls[e.code.toString()])
+      createEvent(Object.assign({ player }, controls[e.code.toString()]))
     );
     e.preventDefault();
   });
   blackButton.addEventListener('change', function(e) {
-    fbEvents.push({
+    fbEvents.push(createEvent({
       t: EventType.Claim,
-      time: Date.now(),
       user: me,
       player: Player.One,
-    });
+    }));
   });
   whiteButton.addEventListener('change', function(e) {
-    fbEvents.push({
+    fbEvents.push(createEvent({
       t: EventType.Claim,
-      time: Date.now(),
       user: me,
       player: Player.Two,
-    });
+    }));
   })
 }
 

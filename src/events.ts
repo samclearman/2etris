@@ -1,3 +1,5 @@
+import * as firebase from "firebase/app";
+
 import { Shape, eventHandlers } from './game';
 // Events
 
@@ -72,6 +74,12 @@ export function processEvent(e: E, game) {
     return game
   }
   return eventHandlers[e.t](e, game);
+}
+
+export function createEvent(e) {
+  // no types
+  e.time = firebase.database.ServerValue.TIMESTAMP;
+  return e;
 }
 
 function prettyEvent(e, start = 0) {
