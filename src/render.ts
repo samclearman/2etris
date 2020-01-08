@@ -147,7 +147,8 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
       events = [events];
     }
     for (event of events) {
-      fbEvents.push(createEvent(Object.assign({ player }, event), session));
+      const e = createEvent(Object.assign({ player }, event), session)
+      e && fbEvents.push(e);
     }
     e.preventDefault();
   });

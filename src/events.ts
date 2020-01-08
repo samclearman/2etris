@@ -22,18 +22,21 @@ interface IEvent {
 
 export interface Rotate extends IEvent {
   t: EventType.Rotate;
+  omino: number;
   player: number;
   direction: 1 | -1;
 }
 
 export interface Move extends IEvent {
   t: EventType.Move;
+  omino: number;
   player: number;
   direction: 1 | -1;
 }
 
 export interface Drop extends IEvent {
   t: EventType.Drop;
+  omino: number;
   player: number;
 }
 
@@ -45,6 +48,7 @@ export interface Spawn extends IEvent {
 
 export interface Fall extends IEvent {
   t: EventType.Fall;
+  omino: number;
   player: number;
 }
 
@@ -63,6 +67,7 @@ export type E = Rotate | Move | Drop | Spawn | Fall | Init | Claim;
 
 export function tickEvent(o): Fall {
   return {
+    omino: o.id,
     t: EventType.Fall,
     time: o.nextFall,
     player: o.player,
@@ -80,6 +85,12 @@ export function processEvent(e: E, game) {
 
 export function createEvent(e, session) {
   // no types
+  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall].includes(e.t)) {
+    if (!session.game) {
+      return null;
+    }
+    e.omino = session.game.activeOminos[e.player].id;
+  }
   e.time = firebase.database.ServerValue.TIMESTAMP;
   e.localTime = Date.now();
   e.user = session.me;

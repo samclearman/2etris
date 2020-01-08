@@ -145,14 +145,15 @@ function kicks(omino, direction) {
 }
 
 interface Omino {
-  shape: Shape
-  rotation: 0 | 1 | 2 | 3,
-  mask: Mask
-  player: Player
-  x: number,
-  y: number,
-  nextFall: number,
-  speed: number,
+  id: number;
+  shape: Shape;
+  rotation: 0 | 1 | 2 | 3;
+  mask: Mask;
+  player: Player;
+  x: number;
+  y: number;
+  nextFall: number;
+  speed: number;
 }
 
 function copyMask(m: Mask) {
@@ -239,6 +240,7 @@ export function globalCoordGhostPositions(game, omino: Omino, { dx, dy }: Vector
 
 function copyOmino(o: Omino): Omino {
   return {
+    id: o.id,
     shape: o.shape,
     player: o.player,
     rotation: o.rotation,
@@ -251,23 +253,28 @@ function copyOmino(o: Omino): Omino {
 }
 
 function newOmino(
-  shape: Shape,
+  game,
   player: Player,
   createdAt: number,
-  speed: number
 ) {
+  const shape = game.bag[player].pop();
+  if (game.bag[player].length < 7) {
+    game.bag[player] = randomBag(game.rng[player]).concat(game.bag[player]);
+  }
+  const v = speed(game);
   const mask = masks[shape];
   const x = Math.floor((gridWidth - mask[0].length) / 2) + spawnOffset(shape).x;
   const y = spawnOffset(shape).y;
   return {
+    id: game.nextOminoId[player]++,
     shape,
     rotation: 0,
     mask,
     player,
     x,
     y,
-    nextFall: createdAt + speed,
-    speed: speed
+    nextFall: createdAt + v,
+    speed: v
   };
 }
 
@@ -286,7 +293,7 @@ export function newGame(e: Init) {
   const rng2 = seedrandom(e.seed.split('').reverse().join(''));
   const bag1 = randomBag(rng1);
   const bag2 = randomBag(rng2);
-  return {
+  const game = {
     lines: 0,
     score: 0,
     active: true,
@@ -331,12 +338,21 @@ export function newGame(e: Init) {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
-    activeOminos: {
-      [Player.One]: newOmino(bag1.pop(), Player.One, e.time, 1000),
-      [Player.Two]: newOmino(bag2.pop(), Player.Two, e.time, 1000)
+    nextOminoId: {
+      [Player.One]: 0,
+      [Player.Two]: 0,
     },
+    activeOminos: {
+      [Player.One]: null,
+      [Player.Two]: null,
+    }
   };
-}
+  game.activeOminos = {
+    [Player.One]: newOmino(game, Player.One, e.time),
+    [Player.Two]: newOmino(game, Player.Two, e.time)
+  };
+  return game;
+};
 
 
 function checkCollision(game, omino, { dx, dy }) {
@@ -422,15 +438,18 @@ function randomBag(rng: () => number) {
 export const eventHandlers = {
   [EventType.Spawn]: function(e: Spawn, game) {
     game.activeOminos[e.player] = newOmino(
-      e.shape,
+      game,
       e.player,
       e.time,
-      speed(game)
     );
     return game;
   },
   [EventType.Move]: function(e: Move, game) {
     const o = copyOmino(game.activeOminos[e.player]);
+    if (o.id !== e.omino) {
+      console.warn('Event targeted wrong omino');
+      return game;
+    }
     o.x += e.direction;
     if (!checkCollision(game, o, { dx: 0, dy: 0 })) {
       game.activeOminos[e.player] = o;
@@ -439,6 +458,10 @@ export const eventHandlers = {
   },
   [EventType.Rotate]: function(e: Rotate, game) {
     const o = copyOmino(game.activeOminos[e.player]);
+    if (o.id !== e.omino) {
+      console.warn('Event targeted wrong omino');
+      return game;
+    }
     o.rotation = (o.rotation + e.direction + 4) % 4 as 0 | 1 | 2 | 3;
     o.mask = rotatedMask(o.mask, e.direction);
     for (const { dx, dy } of kicks(o, e.direction)) {
@@ -453,6 +476,10 @@ export const eventHandlers = {
   },
   [EventType.Drop]: function(e: Drop, game) {
     const o = copyOmino(game.activeOminos[e.player]);
+    if (o.id !== e.omino) {
+      console.warn('Event targeted wrong omino');
+      return game;
+    }
     let drop = 0;
     while (!checkCollision(game, o, { dx: 0, dy: drop })) {
       drop += 1;
@@ -467,21 +494,20 @@ export const eventHandlers = {
   },
   [EventType.Fall]: function(e: Fall, game) {
     const o = copyOmino(game.activeOminos[e.player]);
+    if (o.id !== e.omino) {
+      console.warn('Event targeted wrong omino');
+      return game;
+    }
     if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
       o.y += 1;
       o.nextFall += o.speed;
       game.activeOminos[e.player] = o;
     } else {
       freeze(game, o);
-      const shape = game.bag[e.player].pop();
-      if (game.bag[e.player].length === 0) {
-        game.bag[e.player] = randomBag(game.rng[e.player]);
-      }
       game.activeOminos[e.player] = newOmino(
-        shape,
+        game,
         e.player,
         e.time,
-        speed(game),
       );
     }
     return game;
