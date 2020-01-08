@@ -282,13 +282,17 @@ function speed(game) {
 }
 
 export function newGame(e: Init) {
-  const rng = seedrandom(e.seed.toString());
+  const rng1 = seedrandom(e.seed);
+  const rng2 = seedrandom(e.seed.split('').reverse().join(''));
   return {
     lines: 0,
     score: 0,
     active: true,
     over: false,
-    rng,
+    rng: {
+      [Player.One]: rng1,
+      [Player.Two]: rng2,
+    },
     grid: [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -322,8 +326,8 @@ export function newGame(e: Init) {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
     activeOminos: {
-      [Player.One]: newOmino(Shape.S, Player.One, e.time, 1000),
-      [Player.Two]: newOmino(Shape.S, Player.Two, e.time, 1000)
+      [Player.One]: newOmino(randomShape(rng1), Player.One, e.time, 1000),
+      [Player.Two]: newOmino(randomShape(rng2), Player.Two, e.time, 1000)
     },
   };
 }
@@ -454,7 +458,7 @@ export const eventHandlers = {
     } else {
       freeze(game, o);
       game.activeOminos[e.player] = newOmino(
-        randomShape(game.rng),
+        randomShape(game.rng[e.player]),
         e.player,
         e.time,
         speed(game),
