@@ -147,23 +147,21 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
       events = [events];
     }
     for (event of events) {
-      fbEvents.push(createEvent(Object.assign({ player }, event)));
+      fbEvents.push(createEvent(Object.assign({ player }, event), session));
     }
     e.preventDefault();
   });
   blackButton.addEventListener('change', function(e) {
     fbEvents.push(createEvent({
       t: EventType.Claim,
-      user: me,
       player: Player.One,
-    }));
+    }, session));
   });
   whiteButton.addEventListener('change', function(e) {
     fbEvents.push(createEvent({
       t: EventType.Claim,
-      user: me,
       player: Player.Two,
-    }));
+    }, session));
   })
 }
 

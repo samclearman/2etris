@@ -67,6 +67,7 @@ export function computeSession(session, events: E[], end: number) {
           time: next.time + 1000,
           t: EventType.Init,
           seed: session.seed,
+          user: session.me,
         })
         session.state = SessionState.Playing;
       }
@@ -83,15 +84,14 @@ export function makeSession(me, db, callback) {
     createEvent({
       t: EventType.Init,
       seed: Math.random().toString(),
-    })]
+    }, { me })]
   const u = new URL(window.location.href);
   if (u.searchParams.has('test')) {
     initialEvents.push(createEvent({
       t: EventType.Claim,
-      user: me,
       player: Player.One,
       both: true,
-    }));
+    }, { me }));
   }
   db.ref('sessions').push(initialEvents).then(ref => {
     console.log(ref.key);

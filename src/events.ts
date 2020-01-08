@@ -15,7 +15,9 @@ export enum EventType {
 
 interface IEvent {
   t: EventType;
+  user: string;
   time: number;
+  localTime?: number;
 }
 
 export interface Rotate extends IEvent {
@@ -53,7 +55,6 @@ export interface Init extends IEvent {
 
 export interface Claim extends IEvent {
   t: EventType.Claim;
-  user: string;
   player: number;
   both?: boolean;
 }
@@ -64,7 +65,8 @@ export function tickEvent(o): Fall {
   return {
     t: EventType.Fall,
     time: o.nextFall,
-    player: o.player
+    player: o.player,
+    user: '',
   };
 }
 
@@ -76,9 +78,11 @@ export function processEvent(e: E, game) {
   return eventHandlers[e.t](e, game);
 }
 
-export function createEvent(e) {
+export function createEvent(e, session) {
   // no types
   e.time = firebase.database.ServerValue.TIMESTAMP;
+  e.localTime = Date.now();
+  e.user = session.me;
   return e;
 }
 

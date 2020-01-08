@@ -59,6 +59,7 @@ function game() {
     // @ts-ignore
     self.prettyEvents = prettyEvents;
   }
+  let timeOffset = 0;
   const fbEvents = firebase.database().ref(`sessions/${u.searchParams.get('session')}`);
   // fbEvents.on("child_added", function(snapshot) {
   //   const e = snapshot.val();
@@ -67,6 +68,13 @@ function game() {
   fbEvents.on('value', function (snapshot) {
     events = Object.values(snapshot.val());
     events.sort((e1, e2) => e1.time - e2.time);
+    const lastTen = []
+    for (let i = events.length - 1; i >= 0 && lastTen.length < 10; i--) {
+      if (events[i].user === session.me && events[i].localTime) {
+        lastTen.push(events[i]);
+      }
+    }
+    timeOffset = lastTen.length > 0 ? lastTen.map(e => e.time - e.localTime).reduce((x, y) => x + y) / lastTen.length: 0;
   })
   registerControls({blackButton, whiteButton, fbEvents, session});
 
@@ -74,7 +82,7 @@ function game() {
   if(self.DEBUG_SESSION) self.DEBUG_SESSION = session;
   const loop = () => {
     // @ts-ignore
-    const t = self.DEBUG_TIME || Date.now();
+    const t = self.DEBUG_TIME || Date.now() + timeOffset;
     // @ts-ignore
     if (self.DEBUG_EVENTS) self.DEBUG_EVENTS = events;
     computeSession(session, events, t);
