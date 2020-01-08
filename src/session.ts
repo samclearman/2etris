@@ -74,7 +74,7 @@ export function computeSession(session, events: E[], end: number) {
       continue;
     }
     if (session.state === SessionState.Playing) processEvent(next, session.game);
-    if (session.game.over) session.state = SessionState.Over;
+    if (session.game && session.game.over) session.state = SessionState.Over;
   }
   return session;
 }
