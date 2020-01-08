@@ -95,7 +95,7 @@ function render(ctx, game, transform) {
   }
 }
 
-export function renderClaimer({blackButton, whiteButton, overlay}, session) {
+export function renderClaimer({blackButton, whiteButton, link, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
   }
@@ -111,6 +111,7 @@ export function renderClaimer({blackButton, whiteButton, overlay}, session) {
       button.disabled = false;
     }
   }
+  link.textContent = window.location.href;
 }
 
 function renderScore({scoreOutput, linesOutput}, game) {
@@ -150,8 +151,8 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
   })
 }
 
-export function renderSession({blackButton, whiteButton, scoreOutput, linesOutput, overlay, ctx}, session) {
-  renderClaimer({blackButton, whiteButton, overlay}, session);
+export function renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session) {
+  renderClaimer({blackButton, whiteButton, link, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(ctx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderScore({scoreOutput, linesOutput}, session.game);

@@ -49,6 +49,7 @@ function game() {
   const whiteButton = document.getElementById("white-button");
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
+  const link = document.getElementById("link");
   
   let events: E[] = [];
   // @ts-ignore
@@ -77,7 +78,7 @@ function game() {
     // @ts-ignore
     if (self.DEBUG_EVENTS) self.DEBUG_EVENTS = events;
     computeSession(session, events, t);
-    renderSession({blackButton, whiteButton, scoreOutput, linesOutput, overlay, ctx}, session)
+    renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session)
     setTimeout(loop, 10);
   };
   loop();
