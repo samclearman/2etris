@@ -27,8 +27,7 @@ export function computeSession(session, events: E[], end: number) {
   let i = 0;
   const nextEvent = function() {
     if (session.state !== SessionState.Playing) {
-      i++;
-      return events [i - 1];
+      return events [i++];
     }
     const game = session.game!;
     if (
@@ -36,8 +35,7 @@ export function computeSession(session, events: E[], end: number) {
       events[i].time < game.activeOminos[Player.One].nextFall &&
       events[i].time < game.activeOminos[Player.Two].nextFall
     ) {
-      i++;
-      return events[i - 1];
+      return events[i++];
     }
     const n =
       game.activeOminos[Player.One].nextFall <
@@ -76,6 +74,16 @@ export function computeSession(session, events: E[], end: number) {
     if (session.state === SessionState.Playing) processEvent(next, session.game);
     if (session.game && session.game.over) session.state = SessionState.Over;
   }
+
+  // Jitter mitigation
+  for(i--; i < events.length && events[i].time < end + 1000; i++) {
+    if (events[i].time < end) {
+      // we already processed this event
+      continue;
+    }
+    if (session.state === SessionState.Playing) processEvent(events[i], session.game);
+  }
+
   return session;
 }
 
