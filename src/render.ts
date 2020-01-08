@@ -40,6 +40,10 @@ const controls = {
     t: EventType.Rotate,
     direction: 1
   },
+  KeyX: {
+    t: EventType.Rotate,
+    direction: 1
+  },
   ArrowLeft: {
     t: EventType.Move,
     direction: -1
@@ -50,6 +54,18 @@ const controls = {
   },
   ArrowDown: {
     t: EventType.Drop,
+  },
+  KeyZ: {
+    t: EventType.Rotate,
+    direction: -1,
+  },
+  ControlLeft: {
+    t: EventType.Rotate,
+    direction: -1,
+  },
+  ControlRight: {
+    t: EventType.Rotate,
+    direction: -1,
   },
   Space: [
     {
