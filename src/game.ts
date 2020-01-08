@@ -284,6 +284,8 @@ function speed(game) {
 export function newGame(e: Init) {
   const rng1 = seedrandom(e.seed);
   const rng2 = seedrandom(e.seed.split('').reverse().join(''));
+  const bag1 = randomBag(rng1);
+  const bag2 = randomBag(rng2);
   return {
     lines: 0,
     score: 0,
@@ -292,6 +294,10 @@ export function newGame(e: Init) {
     rng: {
       [Player.One]: rng1,
       [Player.Two]: rng2,
+    },
+    bag: {
+      [Player.One]: bag1,
+      [Player.Two]: bag2,
     },
     grid: [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -326,8 +332,8 @@ export function newGame(e: Init) {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
     activeOminos: {
-      [Player.One]: newOmino(randomShape(rng1), Player.One, e.time, 1000),
-      [Player.Two]: newOmino(randomShape(rng2), Player.Two, e.time, 1000)
+      [Player.One]: newOmino(bag1.pop(), Player.One, e.time, 1000),
+      [Player.Two]: newOmino(bag2.pop(), Player.Two, e.time, 1000)
     },
   };
 }
@@ -402,6 +408,16 @@ function randomShape(rng: () => number) {
   return Math.floor(rng() * 7) as Shape;
 }
 
+function randomBag(rng: () => number) {
+  const bag = [0,1,2,3,4,5,6];
+  for (let i = 0; i < 7; i++) {
+    const n = i +  Math.floor(rng() * (7 - i));
+    const x = bag[n];
+    bag[n] = bag[i];
+    bag[i] = x;
+  }
+  return bag as Shape[];
+}
 
 export const eventHandlers = {
   [EventType.Spawn]: function(e: Spawn, game) {
@@ -457,8 +473,12 @@ export const eventHandlers = {
       game.activeOminos[e.player] = o;
     } else {
       freeze(game, o);
+      const shape = game.bag[e.player].pop();
+      if (game.bag[e.player].length === 0) {
+        game.bag[e.player] = randomBag(game.rng[e.player]);
+      }
       game.activeOminos[e.player] = newOmino(
-        randomShape(game.rng[e.player]),
+        shape,
         e.player,
         e.time,
         speed(game),
