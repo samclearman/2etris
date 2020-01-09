@@ -19,6 +19,8 @@ interface IEvent {
   user: string;
   time: number;
   localTime?: number;
+  parent?: string;
+  _k?: string;
 }
 
 export interface Rotate extends IEvent {
@@ -101,6 +103,7 @@ export function createEvent(e, session) {
   e.time = firebase.database.ServerValue.TIMESTAMP;
   e.localTime = Date.now();
   e.user = session.me;
+  e.parent = session.firebase.lastEvent;
   session.firebase.eventsRef.push(e);
 }
 

@@ -26,13 +26,22 @@ export function newSession(id, me) {
     me,
     events: [] as E[],
     firebase: {
+      lastEvent: null,
       eventsRef,
       timeOffset: 0
     }
   }, blankSession);
   
   eventsRef.on('value', function (snapshot) {
-    s.events = Object.values(snapshot.val());
+    const v = snapshot.val();
+    for (const k in v) {
+      const e = v[k];
+      e._k = k;
+      if (v[e.parent]) {
+        e.time = Math.max(e.time, v[e.parent].time);
+      }
+    }
+    s.events = Object.values(v);
     s.events.sort((e1, e2) => e1.time - e2.time);
     const lastTen = []
     for (let i = s.events.length - 1; i >= 0 && lastTen.length < 10; i--) {
@@ -40,6 +49,7 @@ export function newSession(id, me) {
         lastTen.push(s.events[i]);
       }
     }
+    s.firebase.lastEvent = s.events.slice(-1)[0]._k;
     s.firebase.timeOffset = lastTen.length > 0 ? lastTen.map(e => e.time - e.localTime).reduce((x, y) => x + y) / lastTen.length: 0;
   })
 
@@ -100,7 +110,7 @@ export function computeSession(session, end: number) {
     if (session.game && session.game.over) session.state = SessionState.Over;
   }
 
-  // Jitter mitigation
+  // Jitter mitigation - note that this doesn't actually seem to work :(
   for(i--; i < events.length && events[i].time < end + 1000; i++) {
     if (events[i].time < end) {
       // we already processed this event
