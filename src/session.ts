@@ -38,6 +38,7 @@ export function newSession(id, me) {
       const e = v[k];
       e._k = k;
       if (v[e.parent]) {
+        // Flicker fix
         e.time = Math.max(e.time, v[e.parent].time);
       }
     }

@@ -438,7 +438,7 @@ function randomBag(rng: () => number) {
 const dropHandler = function(e: Drop | HardDrop, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
-    console.warn('Event targeted wrong omino');
+    // console.warn('Event targeted wrong omino');
     return game;
   }
   let drop = 0;
@@ -457,7 +457,7 @@ const dropHandler = function(e: Drop | HardDrop, game) {
 const fallHandler = function(e: Fall | HardDrop, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
-    console.warn('Event targeted wrong omino');
+    // console.warn('Event targeted wrong omino');
     return game;
   }
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
@@ -491,7 +491,7 @@ export const eventHandlers = {
   [EventType.Move]: function(e: Move, game) {
     const o = copyOmino(game.activeOminos[e.player]);
     if (o.id !== e.omino) {
-      console.warn('Event targeted wrong omino');
+      // console.warn('Event targeted wrong omino');
       return game;
     }
     o.x += e.direction;
@@ -503,7 +503,7 @@ export const eventHandlers = {
   [EventType.Rotate]: function(e: Rotate, game) {
     const o = copyOmino(game.activeOminos[e.player]);
     if (o.id !== e.omino) {
-      console.warn('Event targeted wrong omino');
+      // console.warn('Event targeted wrong omino');
       return game;
     }
     o.rotation = (o.rotation + e.direction + 4) % 4 as 0 | 1 | 2 | 3;
