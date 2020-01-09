@@ -35,57 +35,36 @@ function game() {
   const me = window.localStorage.getItem('me');
   const u = new URL(window.location.href);
   if (!u.searchParams.has('session')) {
-    const s = makeSession(me, db, game);
+    makeSession(me, db, game);
     return;
   }
 
-  let session = newSession(me);
+  let session = newSession(u.searchParams.get('session'), me);
 
   const canvas = <HTMLCanvasElement>document.getElementById("game");
   const ctx = canvas.getContext("2d");
-
   const overlay = document.getElementById("pregame");
   const blackButton = document.getElementById("black-button");
   const whiteButton = document.getElementById("white-button");
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   const link = document.getElementById("link");
-  
-  let events: E[] = [];
+
+  registerControls({blackButton, whiteButton, session});
+
   // @ts-ignore
-  if (self.DEBUG_EVENTS) {
+  if(self.DEBUG_SESSION) {
     // @ts-ignore
-    self.DEBUG_EVENTS = events;
+    self.DEBUG_SESSION = session;
     // @ts-ignore
     self.prettyEvents = prettyEvents;
   }
-  let timeOffset = 0;
-  const fbEvents = firebase.database().ref(`sessions/${u.searchParams.get('session')}`);
-  // fbEvents.on("child_added", function(snapshot) {
-  //   const e = snapshot.val();
-  //   events.push(e);
-  // });
-  fbEvents.on('value', function (snapshot) {
-    events = Object.values(snapshot.val());
-    events.sort((e1, e2) => e1.time - e2.time);
-    const lastTen = []
-    for (let i = events.length - 1; i >= 0 && lastTen.length < 10; i--) {
-      if (events[i].user === session.me && events[i].localTime) {
-        lastTen.push(events[i]);
-      }
-    }
-    timeOffset = lastTen.length > 0 ? lastTen.map(e => e.time - e.localTime).reduce((x, y) => x + y) / lastTen.length: 0;
-  })
-  registerControls({blackButton, whiteButton, fbEvents, session});
 
-  // @ts-ignore
-  if(self.DEBUG_SESSION) self.DEBUG_SESSION = session;
   const loop = () => {
     // @ts-ignore
-    const t = self.DEBUG_TIME || Date.now() + timeOffset;
-    // @ts-ignore
-    if (self.DEBUG_EVENTS) self.DEBUG_EVENTS = events;
-    computeSession(session, events, t);
+    const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
+
+    computeSession(session, t);
     renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session)
     setTimeout(loop, 10);
   };

@@ -1,3 +1,5 @@
+import * as firebase from "firebase/app";
+
 import { Player, newGame } from './game';
 import { processEvent, E, EventType, tickEvent, createEvent } from './events';
 export enum SessionState {
@@ -16,14 +18,37 @@ const blankSession = {
   game: null
 };
 
-export function newSession(me) {
-  return Object.assign({
+export function newSession(id, me) {
+  let timeOffset = 0;
+
+  const eventsRef = firebase.database().ref(`sessions/${id}`);
+  const s = Object.assign({
     me,
+    events: [] as E[],
+    firebase: {
+      eventsRef,
+      timeOffset: 0
+    }
   }, blankSession);
+  
+  eventsRef.on('value', function (snapshot) {
+    s.events = Object.values(snapshot.val());
+    s.events.sort((e1, e2) => e1.time - e2.time);
+    const lastTen = []
+    for (let i = s.events.length - 1; i >= 0 && lastTen.length < 10; i--) {
+      if (s.events[i].user === me && s.events[i].localTime) {
+        lastTen.push(s.events[i]);
+      }
+    }
+    s.firebase.timeOffset = lastTen.length > 0 ? lastTen.map(e => e.time - e.localTime).reduce((x, y) => x + y) / lastTen.length: 0;
+  })
+
+  return s;
 }
 
-export function computeSession(session, events: E[], end: number) {
+export function computeSession(session, end: number) {
   Object.assign(session, blankSession);
+  const events = session.events;
   let i = 0;
   const nextEvent = function() {
     if (session.state !== SessionState.Playing) {
@@ -88,18 +113,23 @@ export function computeSession(session, events: E[], end: number) {
 }
 
 export function makeSession(me, db, callback) {
-  const initialEvents: E[] = [
-    createEvent({
-      t: EventType.Init,
-      seed: Math.random().toString(),
-    }, { me })]
+  const initialEvents: any = [{
+    time: firebase.database.ServerValue.TIMESTAMP,
+    localTime: Date.now(),
+    user: me,
+    t: EventType.Init,
+    seed: Math.random().toString(),
+  }]
   const u = new URL(window.location.href);
   if (u.searchParams.has('test')) {
-    initialEvents.push(createEvent({
+    initialEvents.push({
+      time: firebase.database.ServerValue.TIMESTAMP,
+      localTime: Date.now(),
+      user: me,
       t: EventType.Claim,
       player: Player.One,
       both: true,
-    }, { me }));
+    });
   }
   db.ref('sessions').push(initialEvents).then(ref => {
     console.log(ref.key);

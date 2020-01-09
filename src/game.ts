@@ -1,5 +1,5 @@
 import * as seedrandom from 'seedrandom';
-import { EventType, Init, Spawn, Move, Rotate, Drop, Fall } from './events';
+import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop } from './events';
 
 const gridWidth = 10;
 export const gridHeight = 30;
@@ -435,6 +435,50 @@ function randomBag(rng: () => number) {
   return bag as Shape[];
 }
 
+const dropHandler = function(e: Drop | HardDrop, game) {
+  const o = copyOmino(game.activeOminos[e.player]);
+  if (o.id !== e.omino) {
+    console.warn('Event targeted wrong omino');
+    return game;
+  }
+  let drop = 0;
+  while (!checkCollision(game, o, { dx: 0, dy: drop })) {
+    drop += 1;
+  }
+  drop -= 1;
+  o.y += drop;
+  if (drop !== 0) {
+    o.nextFall = e.time + o.speed;
+  }
+  game.activeOminos[e.player] = o;
+  return game;
+};
+
+const fallHandler = function(e: Fall | HardDrop, game) {
+  const o = copyOmino(game.activeOminos[e.player]);
+  if (o.id !== e.omino) {
+    console.warn('Event targeted wrong omino');
+    return game;
+  }
+  if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
+    o.y += 1;
+    o.nextFall += o.speed;
+    game.activeOminos[e.player] = o;
+  } else {
+    freeze(game, o);
+    game.activeOminos[e.player] = newOmino(
+      game,
+      e.player,
+      e.time,
+    );
+  }
+  return game;
+};
+
+const hardDropHandler = function(e: HardDrop, game) {
+  return fallHandler(e, dropHandler(e, game));
+}
+
 export const eventHandlers = {
   [EventType.Spawn]: function(e: Spawn, game) {
     game.activeOminos[e.player] = newOmino(
@@ -474,42 +518,7 @@ export const eventHandlers = {
     }
     return game;
   },
-  [EventType.Drop]: function(e: Drop, game) {
-    const o = copyOmino(game.activeOminos[e.player]);
-    if (o.id !== e.omino) {
-      console.warn('Event targeted wrong omino');
-      return game;
-    }
-    let drop = 0;
-    while (!checkCollision(game, o, { dx: 0, dy: drop })) {
-      drop += 1;
-    }
-    drop -= 1;
-    o.y += drop;
-    if (drop !== 0) {
-      o.nextFall = e.time + o.speed;
-    }
-    game.activeOminos[e.player] = o;
-    return game;
-  },
-  [EventType.Fall]: function(e: Fall, game) {
-    const o = copyOmino(game.activeOminos[e.player]);
-    if (o.id !== e.omino) {
-      console.warn('Event targeted wrong omino');
-      return game;
-    }
-    if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
-      o.y += 1;
-      o.nextFall += o.speed;
-      game.activeOminos[e.player] = o;
-    } else {
-      freeze(game, o);
-      game.activeOminos[e.player] = newOmino(
-        game,
-        e.player,
-        e.time,
-      );
-    }
-    return game;
-  },
+  [EventType.Drop]: dropHandler,
+  [EventType.Fall]: fallHandler,
+  [EventType.HardDrop]: hardDropHandler,
 };

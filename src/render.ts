@@ -135,7 +135,7 @@ function renderScore({scoreOutput, linesOutput}, game) {
   linesOutput.textContent = game.lines;
 }
 
-export function registerControls({blackButton, whiteButton, fbEvents, session}) {
+export function registerControls({blackButton, whiteButton, session}) {
   const { me } = session;
   window.addEventListener("keydown", function(e) {
     if (!(e.code.toString() in controls)) {
@@ -148,22 +148,21 @@ export function registerControls({blackButton, whiteButton, fbEvents, session}) 
     }
     for (event of events) {
       const e = createEvent(Object.assign({ player }, event), session)
-      e && fbEvents.push(e);
     }
     e.preventDefault();
   });
   blackButton.addEventListener('change', function(e) {
-    fbEvents.push(createEvent({
+    createEvent({
       t: EventType.Claim,
       player: Player.One,
-    }, session));
+    }, session)
   });
   whiteButton.addEventListener('change', function(e) {
-    fbEvents.push(createEvent({
+    createEvent({
       t: EventType.Claim,
       player: Player.Two,
-    }, session));
-  })
+    }, session)
+  });
 }
 
 export function renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session) {

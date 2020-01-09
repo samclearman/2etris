@@ -7,6 +7,7 @@ export enum EventType {
   Rotate,
   Move,
   Drop,
+  HardDrop,
   Spawn,
   Fall,
   Init,
@@ -40,6 +41,12 @@ export interface Drop extends IEvent {
   player: number;
 }
 
+export interface HardDrop extends IEvent {
+  t: EventType.HardDrop;
+  omino: number;
+  player: number;
+}
+
 export interface Spawn extends IEvent {
   t: EventType.Spawn;
   player: number;
@@ -63,7 +70,7 @@ export interface Claim extends IEvent {
   both?: boolean;
 }
 
-export type E = Rotate | Move | Drop | Spawn | Fall | Init | Claim;
+export type E = Rotate | Move | Drop | HardDrop | Spawn | Fall | Init | Claim;
 
 export function tickEvent(o): Fall {
   return {
@@ -94,7 +101,7 @@ export function createEvent(e, session) {
   e.time = firebase.database.ServerValue.TIMESTAMP;
   e.localTime = Date.now();
   e.user = session.me;
-  return e;
+  session.firebase.eventsRef.push(e);
 }
 
 function prettyEvent(e, start = 0) {
