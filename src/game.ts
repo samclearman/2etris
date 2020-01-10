@@ -404,10 +404,10 @@ function score(game, lines) {
   return [0,100,300,500,800][lines] * level(game);
 }
 
-function freeze(game, omino) {
+function lock(game, omino) {
   const yToCheck = new Set();
   for (const { x, y } of globalCoordPositions(omino, { dx: 0, dy: 0 })) {
-    // Todo: the grid should extend beyond the visible area, this check should happen at the end of freeze
+    // Todo: the grid should extend beyond the visible area, this check should happen at the end of lock
     if (y < 0 || y >= gridHeight) {
       game.over = true;
       continue;
@@ -506,7 +506,7 @@ const fallHandler = function(e: Fall | HardDrop, game) {
     o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
     game.activeOminos[e.player] = o;
   } else {
-    freeze(game, o);
+    lock(game, o);
     game.activeOminos[e.player] = newOmino(
       game,
       e.player,
