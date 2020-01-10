@@ -54,8 +54,7 @@ const controls = {
       direction: 1
     },
     ArrowDown: {
-      // t: EventType.Boost,
-      t: EventType.Drop,
+      t: EventType.Boost,
     },
     KeyZ: {
       t: EventType.Rotate,
@@ -79,9 +78,9 @@ const controls = {
     ],
   },
   keyup: {
-    // ArrowDown: {
-    //   t: EventType.Unboost,
-    // },
+    ArrowDown: {
+      t: EventType.Unboost,
+    },
   },
 };;
 
