@@ -264,7 +264,10 @@ function newOmino(
   if (game.bag[player].length < 7) {
     game.bag[player] = randomBag(game.rng[player]).concat(game.bag[player]);
   }
-  const v = speed(game);
+  let v = speed(game);
+  if (game.boosted[player]) {
+    v /= 20;
+  }
   const mask = masks[shape];
   const x = Math.floor((gridWidth - mask[0].length) / 2) + spawnOffset(shape).x;
   const y = spawnOffset(shape).y;
@@ -278,7 +281,7 @@ function newOmino(
     y,
     nextFall: createdAt + v,
     speed: v,
-    boosted: false,
+    boosted: game.boosted[player],
   };
 }
 
@@ -349,7 +352,11 @@ export function newGame(e: Init) {
     activeOminos: {
       [Player.One]: null,
       [Player.Two]: null,
-    }
+    },
+    boosted: {
+      [Player.One]: false,
+      [Player.Two]: false,
+    },
   };
   game.activeOminos = {
     [Player.One]: newOmino(game, Player.One, e.time),
@@ -441,10 +448,8 @@ function randomBag(rng: () => number) {
 
 const boostHandler = function(e: Boost, game) {
   const o = copyOmino(game.activeOminos[e.player]);
-  if (o.id !== e.omino) {
-    // console.warn('Event targeted wrong omino');
-    return game;
-  }
+  // We don't need to check the omino here since boost is idempotent.
+  game.boosted[e.player] = true;
   if (o.boosted) {
     return game;
   }
@@ -461,6 +466,7 @@ const boostHandler = function(e: Boost, game) {
 const unboostHandler = function(e: Unboost, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   // We don't need to check the omino here since unboost is idempotent.
+  game.boosted[e.player] = false
   if (!o.boosted) {
     return game;
   }

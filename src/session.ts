@@ -39,7 +39,7 @@ export function newSession(id, me) {
       e._k = k;
       if (v[e.parent]) {
         // Flicker fix
-        e.time = Math.max(e.time, v[e.parent].time);
+        e.time = Math.max(e.time, v[e.parent].time + 1);
       }
     }
     s.events = Object.values(v);
