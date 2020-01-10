@@ -146,6 +146,9 @@ export function registerControls({blackButton, whiteButton, session}) {
   const { me } = session;
   for (const eventName of ['keydown', 'keyup']) {
     window.addEventListener(eventName, function(e: KeyboardEvent) {
+      if (e.repeat) {
+        return;
+      }
       if (!(e.code.toString() in controls[eventName])) {
         return;
       }
