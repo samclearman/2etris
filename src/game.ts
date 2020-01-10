@@ -449,7 +449,7 @@ const dropHandler = function(e: Drop | HardDrop, game) {
   drop -= 1;
   o.y += drop;
   if (drop !== 0) {
-    o.nextFall = e.time + o.speed;
+    o.nextFall = e.time + LOCK_DELAY;
   }
   game.activeOminos[e.player] = o;
   return game;
