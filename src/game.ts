@@ -1,6 +1,7 @@
 import * as seedrandom from 'seedrandom';
 import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop } from './events';
 
+const LOCK_DELAY = 500;
 const gridWidth = 10;
 export const gridHeight = 30;
 
@@ -462,7 +463,7 @@ const fallHandler = function(e: Fall | HardDrop, game) {
   }
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
-    o.nextFall += o.speed;
+    o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
     game.activeOminos[e.player] = o;
   } else {
     freeze(game, o);
