@@ -1,5 +1,5 @@
 import * as seedrandom from 'seedrandom';
-import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop } from './events';
+import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop, Boost, Unboost } from './events';
 
 const LOCK_DELAY = 500;
 const gridWidth = 10;
@@ -155,6 +155,7 @@ interface Omino {
   y: number;
   nextFall: number;
   speed: number;
+  boosted: boolean;
 }
 
 function copyMask(m: Mask) {
@@ -249,7 +250,8 @@ function copyOmino(o: Omino): Omino {
     x: o.x,
     y: o.y,
     nextFall: o.nextFall,
-    speed: o.speed
+    speed: o.speed,
+    boosted: o.boosted,
   };
 }
 
@@ -275,7 +277,8 @@ function newOmino(
     x,
     y,
     nextFall: createdAt + v,
-    speed: v
+    speed: v,
+    boosted: false,
   };
 }
 
@@ -436,6 +439,37 @@ function randomBag(rng: () => number) {
   return bag as Shape[];
 }
 
+const boostHandler = function(e: Boost, game) {
+  const o = copyOmino(game.activeOminos[e.player]);
+  if (o.id !== e.omino) {
+    // console.warn('Event targeted wrong omino');
+    return game;
+  }
+  if (o.boosted) {
+    return game;
+  }
+  o.speed /= 20;
+  o.boosted = true;
+  if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
+    o.y += 1;
+    o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
+  }
+  game.activeOminos[e.player] = o;
+  return game;
+}
+
+const unboostHandler = function(e: Unboost, game) {
+  const o = copyOmino(game.activeOminos[e.player]);
+  // We don't need to check the omino here since unboost is idempotent.
+  if (!o.boosted) {
+    return game;
+  }
+  o.speed *= 20;
+  o.boosted = false;
+  game.activeOminos[e.player] = o;
+  return game;
+}
+
 const dropHandler = function(e: Drop | HardDrop, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
@@ -522,4 +556,6 @@ export const eventHandlers = {
   [EventType.Drop]: dropHandler,
   [EventType.Fall]: fallHandler,
   [EventType.HardDrop]: hardDropHandler,
+  [EventType.Boost]: boostHandler,
+  [EventType.Unboost]: unboostHandler,
 };

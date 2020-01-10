@@ -36,46 +36,53 @@ const controls = {
   //   player: Player.Two,
   //   direction: 1
   // },
-  ArrowUp: {
-    t: EventType.Rotate,
-    direction: 1
-  },
-  KeyX: {
-    t: EventType.Rotate,
-    direction: 1
-  },
-  ArrowLeft: {
-    t: EventType.Move,
-    direction: -1
-  },
-  ArrowRight: {
-    t: EventType.Move,
-    direction: 1
-  },
-  ArrowDown: {
-    t: EventType.Drop,
-  },
-  KeyZ: {
-    t: EventType.Rotate,
-    direction: -1,
-  },
-  ControlLeft: {
-    t: EventType.Rotate,
-    direction: -1,
-  },
-  ControlRight: {
-    t: EventType.Rotate,
-    direction: -1,
-  },
-  Space: [
-    {
-      t: EventType.Drop,
+  keydown: {
+    ArrowUp: {
+      t: EventType.Rotate,
+      direction: 1
     },
-    {
-      t: EventType.Fall,
-    }
-  ],
-};
+    KeyX: {
+      t: EventType.Rotate,
+      direction: 1
+    },
+    ArrowLeft: {
+      t: EventType.Move,
+      direction: -1
+    },
+    ArrowRight: {
+      t: EventType.Move,
+      direction: 1
+    },
+    ArrowDown: {
+      t: EventType.Boost,
+    },
+    KeyZ: {
+      t: EventType.Rotate,
+      direction: -1,
+    },
+    ControlLeft: {
+      t: EventType.Rotate,
+      direction: -1,
+    },
+    ControlRight: {
+      t: EventType.Rotate,
+      direction: -1,
+    },
+    Space: [
+      {
+        t: EventType.Drop,
+      },
+      {
+        t: EventType.Fall,
+      }
+    ],
+  },
+  keyup: {
+    ArrowDown: {
+      t: EventType.Unboost,
+    },
+  },
+};;
 
 function identity({x,y}) {
   return {x,y}
@@ -137,20 +144,22 @@ function renderScore({scoreOutput, linesOutput}, game) {
 
 export function registerControls({blackButton, whiteButton, session}) {
   const { me } = session;
-  window.addEventListener("keydown", function(e) {
-    if (!(e.code.toString() in controls)) {
-      return;
-    }
-    const player = session.claims[Player.One] === me ? Player.One : Player.Two
-    let events = controls[e.code.toString()];
-    if (!Array.isArray(events)) {
-      events = [events];
-    }
-    for (event of events) {
-      const e = createEvent(Object.assign({ player }, event), session)
-    }
-    e.preventDefault();
-  });
+  for (const eventName of ['keydown', 'keyup']) {
+    window.addEventListener(eventName, function(e: KeyboardEvent) {
+      if (!(e.code.toString() in controls[eventName])) {
+        return;
+      }
+      const player = session.claims[Player.One] === me ? Player.One : Player.Two
+      let events = controls[eventName][e.code.toString()];
+      if (!Array.isArray(events)) {
+        events = [events];
+      }
+      for (event of events) {
+        const e = createEvent(Object.assign({ player }, event), session)
+      }
+      e.preventDefault();
+    });
+  }
   blackButton.addEventListener('change', function(e) {
     createEvent({
       t: EventType.Claim,

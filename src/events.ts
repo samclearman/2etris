@@ -8,6 +8,8 @@ export enum EventType {
   Move,
   Drop,
   HardDrop,
+  Boost,
+  Unboost,
   Spawn,
   Fall,
   Init,
@@ -45,6 +47,18 @@ export interface Drop extends IEvent {
 
 export interface HardDrop extends IEvent {
   t: EventType.HardDrop;
+  omino: number;
+  player: number;
+}
+
+export interface Boost extends IEvent {
+  t: EventType.Drop;
+  omino: number;
+  player: number;
+}
+
+export interface Unboost extends IEvent {
+  t: EventType.Drop;
   omino: number;
   player: number;
 }
@@ -94,7 +108,7 @@ export function processEvent(e: E, game) {
 
 export function createEvent(e, session) {
   // no types
-  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall].includes(e.t)) {
+  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall, EventType.HardDrop, EventType.Boost, EventType.Unboost].includes(e.t)) {
     if (!session.game) {
       return null;
     }
