@@ -4,6 +4,8 @@ import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop, Boost, Unbo
 const LOCK_DELAY = 500;
 const gridWidth = 10;
 export const gridHeight = 30;
+export const gridBuffer = 4;
+const gridOuterHeight = gridHeight + 2 * gridBuffer;
 
 export enum Player {
   One,
@@ -206,7 +208,7 @@ export function globalCoordPositions(omino: Omino, { dx, dy }: Vector) {
         const x = j + omino.x + dx;
         let y = i + omino.y + dy;
         if (player === Player.Two) {
-          y = gridHeight - 1 - y;
+          y = gridOuterHeight - 1 - y;
         }
         positions.push({ x, y });
       }
@@ -230,7 +232,7 @@ export function globalCoordGhostPositions(game, omino: Omino, { dx, dy }: Vector
         const x = j + omino.x + dx;
         let y = i + omino.y + dy;
         if (player === Player.Two) {
-          y = gridHeight - 1 - y;
+          y = gridOuterHeight - 1 - y;
         }
         positions.push({ x, y });
       }
@@ -270,7 +272,7 @@ function newOmino(
   }
   const mask = masks[shape];
   const x = Math.floor((gridWidth - mask[0].length) / 2) + spawnOffset(shape).x;
-  const y = spawnOffset(shape).y;
+  const y = spawnOffset(shape).y + gridBuffer;
   return {
     id: game.nextOminoId[player]++,
     shape,
@@ -329,6 +331,14 @@ export function newGame(e: Init) {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -404,16 +414,33 @@ function score(game, lines) {
   return [0,100,300,500,800][lines] * level(game);
 }
 
+// function checkConnectivity(game, omino) {
+//   const nextRegion = 2;
+  
+//   const engulfed = [];
+//   const mask = game.grid.map(r => r.map(c => -1));
+//   const prev = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+//   for (let i = 0; i < mask.length; i++) {
+//     for (let j = 0; j < prev.length; j++) {
+//       if (
+//     }
+//   }
+// }
+
 function lock(game, omino) {
   const yToCheck = new Set();
   for (const { x, y } of globalCoordPositions(omino, { dx: 0, dy: 0 })) {
     // Todo: the grid should extend beyond the visible area, this check should happen at the end of lock
-    if (y < 0 || y >= gridHeight) {
+    if (y < 0 || y >= gridHeight + (2 * gridBuffer)) {
       game.over = true;
-      continue;
+      return game;
     }
     game.grid[y][x] = omino.player;
     yToCheck.add(y);
+  }
+  if (Array.from(yToCheck).filter(y => y >= gridBuffer && y < gridHeight + gridBuffer).length === 0) {
+    game.over = true;
+    return game;
   }
   let lines = 0;
   const order = omino.player === 0 ? (a, b) => a - b : (a, b) => b - a;
