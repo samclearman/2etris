@@ -414,18 +414,52 @@ function score(game, lines) {
   return [0,100,300,500,800][lines] * level(game);
 }
 
-// function checkConnectivity(game, omino) {
-//   const nextRegion = 2;
+function get(a, i, j, d = 0) {
+  if (a[i]) {
+    if (a[i].length > j) {
+        return a[i][j];
+      }
+    }
+  return d;
+}
+
+function fill(grid, color, start, directions) {
+  const mask = grid.map(r => r.map(c => 0));
+  const m = (i,j) => get(mask, i, j);
+  const g = (i,j) => get(grid, i, j, -1);
+  const queue = [start]
+  let coords;
+  while (coords = queue.pop()) {
+    const [i, j] = coords;
+    if (m(i,j)) {
+      continue;
+    }
+    if (g(i, j) === color) {
+      mask[i][j] = 1;
+      for (const [di, dj] of directions) {
+        queue.push([i + di, j + dj]);
+      }
+    }
+  }
   
-//   const engulfed = [];
-//   const mask = game.grid.map(r => r.map(c => -1));
-//   const prev = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-//   for (let i = 0; i < mask.length; i++) {
-//     for (let j = 0; j < prev.length; j++) {
-//       if (
-//     }
-//   }
-// }
+  return mask;
+}
+
+function checkConnectivity(game, omino) {
+  const directions = [[0,1],[0,-1],[1,0],[-1,0]];
+  const m = fill(game.grid, 1, [0, 0], directions);
+  const m1 = fill(m, 0, [m.length - 1, m[0].length - 1], directions);
+  const n = fill(game.grid, 0, [game.grid.length - 1, game.grid[0].length - 1], directions);
+  const n1 = fill(n, 0, [0, 0], directions);
+  for (let i = 0; i < m1.length; i++) {
+    for (let j = 0; j < m1[i].length; j++) {
+      if (m1[i][j] && n1[i][j]) {
+        game.grid[i][j] = 1 - game.grid[i][j];
+      }
+    }
+  }
+  return game;
+}
 
 function lock(game, omino) {
   const yToCheck = new Set();
@@ -452,6 +486,8 @@ function lock(game, omino) {
   }
   game.lines += lines;
   game.score += score(game, lines);
+  game = checkConnectivity(game, omino);
+  return game;
 }
 
 function randomShape(rng: () => number) {
@@ -533,7 +569,7 @@ const fallHandler = function(e: Fall | HardDrop, game) {
     o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
     game.activeOminos[e.player] = o;
   } else {
-    lock(game, o);
+    game = lock(game, o);
     game.activeOminos[e.player] = newOmino(
       game,
       e.player,
