@@ -1,4 +1,4 @@
-import { Player, gridHeight, gridBuffer, globalCoordPositions, globalCoordGhostPositions } from './game';
+import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions } from './game';
 import { SessionState } from './session';
 import { EventType, createEvent } from './events';
 
@@ -90,7 +90,7 @@ function identity({x,y}) {
 }
 
 function flip({x,y}) {
-  return {x, y: gridHeight - 1 - y};
+  return {x, y: gridOuterHeight - 1 - y};
 }
 
 function render(ctx, game, transform) {

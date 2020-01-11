@@ -5,7 +5,7 @@ const LOCK_DELAY = 500;
 const gridWidth = 10;
 export const gridHeight = 30;
 export const gridBuffer = 4;
-const gridOuterHeight = gridHeight + 2 * gridBuffer;
+export const gridOuterHeight = gridHeight + 2 * gridBuffer;
 
 export enum Player {
   One,
