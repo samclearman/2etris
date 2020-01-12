@@ -25,6 +25,7 @@ export function newSession(id, me) {
   const s = Object.assign({
     me,
     events: [] as E[],
+    easyMode: true,
     firebase: {
       lastEvent: null,
       eventsRef,
@@ -102,9 +103,14 @@ export function computeSession(session, end: number) {
           t: EventType.Init,
           seed: session.seed,
           user: session.me,
+          easyMode: session.easyMode,
         })
         session.state = SessionState.Playing;
       }
+      continue;
+    }
+    if (next.t === EventType.ToggleEasy) {
+      session.easyMode = next.val;
       continue;
     }
     if (session.state === SessionState.Playing) processEvent(next, session.game);

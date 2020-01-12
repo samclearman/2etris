@@ -287,7 +287,6 @@ function newOmino(
   };
 }
 
-
 function level(game) {
   return Math.floor(game.lines / 10) + 1;
 }
@@ -307,6 +306,7 @@ export function newGame(e: Init) {
     score: 0,
     active: true,
     over: false,
+    easyMode: e.easyMode,
     rng: {
       [Player.One]: rng1,
       [Player.Two]: rng2,
@@ -486,7 +486,9 @@ function lock(game, omino) {
   }
   game.lines += lines;
   game.score += score(game, lines);
-  game = checkConnectivity(game, omino);
+  if (game.easyMode) {
+    game = checkConnectivity(game, omino);
+  }
   return game;
 }
 

@@ -137,6 +137,11 @@
             flex-direction: column;
             align-items: center;
         }
+        .details {
+            font-size: 14px;
+            width: 200px;
+            text-align: justify;
+        }
         #instructions {
             border-top: 1px solid black;
             padding-top: 20px;
@@ -185,13 +190,20 @@
     <div id="pregame">
       <h2>Choose any color you like!</h2>
       <div class="button-container" id="black-container">
-      <label for="black">Black</label>
-      <input type="radio" name="color" id="black-button">
+        <label for="black">Black</label>
+        <input type="radio" name="color" id="black-button" />
       </div>
       <div class="button-container" id="white-container">
-      <label for="white">White</label>
-      <input type="radio" name="color" id="white-button">
+        <label for="white">White</label>
+        <input type="radio" name="color" id="white-button" />
       </div>
+      <div class="button-container" id="easy-mode-container">
+        <label for="easy">Easy mode</label>
+        <input type="checkbox" name="easy" id="easy-button" checked/>
+        <p class="details">(With easy mode on, disconnected regions will be automatically cleared)</p>
+      </div>
+      
+        
       <div class="instructions" id="instructions">
         Your game link is <output id="link">Please wait...</output>
         Share the link with a friend. When both players have chosen a color, the game will begin!

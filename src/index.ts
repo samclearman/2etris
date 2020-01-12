@@ -46,11 +46,12 @@ function game() {
   const overlay = document.getElementById("pregame");
   const blackButton = document.getElementById("black-button");
   const whiteButton = document.getElementById("white-button");
+  const easyButton = document.getElementById("easy-button");
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   const link = document.getElementById("link");
 
-  registerControls({blackButton, whiteButton, session});
+  registerControls({blackButton, whiteButton, easyButton, session});
 
   // @ts-ignore
   if(self.DEBUG_SESSION) {
@@ -65,7 +66,7 @@ function game() {
     const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
 
     computeSession(session, t);
-    renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session)
+    renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, ctx}, session)
     setTimeout(loop, 10);
   };
   loop();

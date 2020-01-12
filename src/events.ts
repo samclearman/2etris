@@ -13,7 +13,8 @@ export enum EventType {
   Spawn,
   Fall,
   Init,
-  Claim
+  Claim,
+  ToggleEasy,
 }
 
 interface IEvent {
@@ -77,11 +78,19 @@ export interface Fall extends IEvent {
 
 export interface Init extends IEvent {
   t: EventType.Init;
+  easyMode: boolean;
   seed: string;
 }
 
 export interface Claim extends IEvent {
   t: EventType.Claim;
+  player: number;
+  both?: boolean;
+}
+
+export interface Claim extends IEvent {
+  t: EventType.Claim;
+  val: boolean,
   player: number;
   both?: boolean;
 }

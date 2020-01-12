@@ -122,7 +122,7 @@ function render(ctx, game, transform) {
   }
 }
 
-export function renderClaimer({blackButton, whiteButton, link, overlay}, session) {
+export function renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
   }
@@ -138,6 +138,7 @@ export function renderClaimer({blackButton, whiteButton, link, overlay}, session
       button.disabled = false;
     }
   }
+  easyButton.checked = session.easyMode;
   link.textContent = window.location.href;
 }
 
@@ -146,7 +147,7 @@ function renderScore({scoreOutput, linesOutput}, game) {
   linesOutput.textContent = game.lines;
 }
 
-export function registerControls({blackButton, whiteButton, session}) {
+export function registerControls({blackButton, whiteButton, easyButton, session}) {
   const { me } = session;
   for (const eventName of ['keydown', 'keyup']) {
     window.addEventListener(eventName, function(e: KeyboardEvent) {
@@ -179,10 +180,16 @@ export function registerControls({blackButton, whiteButton, session}) {
       player: Player.Two,
     }, session)
   });
+  easyButton.addEventListener('change', function(e) {
+    createEvent({
+      t: EventType.ToggleEasy,
+      val: e.target.checked,
+    }, session)
+  });
 }
 
-export function renderSession({blackButton, whiteButton, link, scoreOutput, linesOutput, overlay, ctx}, session) {
-  renderClaimer({blackButton, whiteButton, link, overlay}, session);
+export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, ctx}, session) {
+  renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(ctx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderScore({scoreOutput, linesOutput}, session.game);
