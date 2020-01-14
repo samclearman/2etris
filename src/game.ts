@@ -28,7 +28,7 @@ export enum Shape {
 
 type Mask = number[][];
 
-const masks = {
+export const masks = {
   [Shape.I]: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
   // [Shape.O]: [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
   [Shape.O]: [[1, 1], [1, 1]],

@@ -1,4 +1,4 @@
-import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions } from './game';
+import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions, masks } from './game';
 import { SessionState } from './session';
 import { EventType, createEvent } from './events';
 
@@ -122,6 +122,25 @@ function render(ctx, game, transform) {
   }
 }
 
+function renderPreview(ctx, game, player) {
+  ctx.fillStyle = playerColors[player];
+  for (let n = 0; n < 6; n++) {
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 2; j++) {
+        const s = game.bag[player][game.bag[player].length - 1 - n]
+        ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : playerColors[1 - player];
+        const x = i * w;
+        const y = ((5 - n) * 3 + j) * w;
+        ctx.fillRect(x, y, w, w);
+      }
+      ctx.fillStyle = playerColors[1 - player];
+      const x = i * w;
+      const y = ((5 - n) * 3 + 2) * w;
+      ctx.fillRect(x, y, w, w);
+    }
+  }
+}
+
 export function renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
@@ -188,10 +207,11 @@ export function registerControls({blackButton, whiteButton, easyButton, session}
   });
 }
 
-export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, ctx}, session) {
+  export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx}, session) {
   renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
-    render(ctx, session.game, session.claims[Player.One] === session.me ? identity : flip);
+    render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
+    renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
     renderScore({scoreOutput, linesOutput}, session.game);
   }
 };

@@ -38,8 +38,12 @@
             top: 0;
             bottom: 0;
             width: 200px;
-            height: 600px;
+            height: 680px;
             margin: auto;
+        }
+
+        #title {
+            text-align: center;
         }
 
         /* #game { */
@@ -90,7 +94,7 @@
         }
         #sidebar {
             position: absolute;
-            left: -600px;
+            left: -150px;
             right: 0;
             top: 0;
             bottom: 0;
@@ -170,13 +174,17 @@
     </style>
 </head>
 <body>
+
+  <div id="title">
+    <h1><span id="l1">2</span><span id="l2">e</span><span id="l3">t</span><span id="l4">r</span><span id="l5">i</span><span id="l6">s</span></h1>
+  </div>
     
     <div id="sidebar">
-       <h1><span id="l1">2</span><span id="l2">e</span><span id="l3">t</span><span id="l4">r</span><span id="l5">i</span><span id="l6">s</span></h1>
-        <p>For one or two players.  <em>Two players recommended!</em></p>
+        <!--<p>For one or two players.  <em>Two players recommended!</em></p>
          <p>Points are scored for making lines.  As the game speeds up, your score multiplier increases.</p>
         <p class="silly">(To play head to head, simply ignore the score and try to cause the other player to lose.)</p>
-        <p>Control your pieces with the arrow keys.</p>
+        <p>Control your pieces with the arrow keys.</p>-->
+      <canvas id="preview" width="80" height="340" />
     </div>
     
     <div id="controls">
