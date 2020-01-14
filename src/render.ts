@@ -69,15 +69,16 @@ const controls = {
       t: EventType.Rotate,
       direction: -1,
     },
-    Space: [
-      {
-        t: EventType.Drop,
-      },
-      {
-        t: EventType.Fall,
-      }
-    ],
+    Space: {
+      t: EventType.HardDrop,
+    },
     KeyC: {
+      t: EventType.Hold,
+    },
+    ShiftLeft: {
+      t: EventType.Hold,
+    },
+    ShiftRight: {
       t: EventType.Hold,
     }
   },
