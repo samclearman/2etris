@@ -261,10 +261,13 @@ function newOmino(
   game,
   player: Player,
   createdAt: number,
+  shape = null,
 ) {
-  const shape = game.bag[player].pop();
-  if (game.bag[player].length < 7) {
-    game.bag[player] = randomBag(game.rng[player]).concat(game.bag[player]);
+  if (!shape) {
+    shape = game.bag[player].pop();
+    if (game.bag[player].length < 7) {
+      game.bag[player] = randomBag(game.rng[player]).concat(game.bag[player]);
+    }
   }
   let v = speed(game);
   if (game.boosted[player]) {
@@ -284,6 +287,7 @@ function newOmino(
     nextFall: createdAt + v,
     speed: v,
     boosted: game.boosted[player],
+    held: false,
   };
 }
 
@@ -314,6 +318,10 @@ export function newGame(e: Init) {
     bag: {
       [Player.One]: bag1,
       [Player.Two]: bag2,
+    },
+    hold: {
+      [Player.One]: null,
+      [Player.Two]: null,
     },
     grid: [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -585,6 +593,31 @@ const hardDropHandler = function(e: HardDrop, game) {
   return fallHandler(e, dropHandler(e, game));
 }
 
+const holdHandler = function(e: Hold, game) {
+  const o = copyOmino(game.activeOminos[e.player]);
+  if (o.id !== e.omino) {
+    // console.warn('Event targeted wrong omino');
+    return game;
+  }
+  if (o.held) {
+    return game;
+  }
+  if (game.hold[e.player] === null) {
+    game.hold[e.player] = o.shape
+    game.activeOminos[e.player] = newOmino(
+      game,
+      e.player,
+      e.time,
+    );
+    return game;
+  }
+  const oo = newOmino(game, e.player, e.time, game.hold[e.player]);
+  oo.held = true;
+  game.hold[e.player] = o.shape;
+  game.activeOminos[e.player] = oo;
+  return game;
+}
+
 export const eventHandlers = {
   [EventType.Spawn]: function(e: Spawn, game) {
     game.activeOminos[e.player] = newOmino(
@@ -629,4 +662,5 @@ export const eventHandlers = {
   [EventType.HardDrop]: hardDropHandler,
   [EventType.Boost]: boostHandler,
   [EventType.Unboost]: unboostHandler,
+  [EventType.Hold]: holdHandler,
 };

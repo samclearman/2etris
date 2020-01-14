@@ -15,6 +15,7 @@ export enum EventType {
   Init,
   Claim,
   ToggleEasy,
+  Hold,
 }
 
 interface IEvent {
@@ -95,7 +96,12 @@ export interface Claim extends IEvent {
   both?: boolean;
 }
 
-export type E = Rotate | Move | Drop | HardDrop | Spawn | Fall | Init | Claim;
+export interface Hold extends IEvent {
+  t: EventType.Hold;
+  player: number;
+}
+
+export type E = Rotate | Move | Drop | HardDrop | Spawn | Fall | Init | Claim | Hold;
 
 export function tickEvent(o): Fall {
   return {
@@ -117,7 +123,7 @@ export function processEvent(e: E, game) {
 
 export function createEvent(e, session) {
   // no types
-  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall, EventType.HardDrop, EventType.Boost, EventType.Unboost].includes(e.t)) {
+  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall, EventType.HardDrop, EventType.Boost, EventType.Unboost, EventType.Hold].includes(e.t)) {
     if (!session.game) {
       return null;
     }

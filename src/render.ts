@@ -77,6 +77,9 @@ const controls = {
         t: EventType.Fall,
       }
     ],
+    KeyC: {
+      t: EventType.Hold,
+    }
   },
   keyup: {
     // ArrowDown: {
@@ -134,10 +137,6 @@ function renderPreview(ctx, game, player) {
         ctx.clearRect(x, y, w, w);
         ctx.fillRect(x, y, w, w);
       }
-      // ctx.fillStyle = playerColors[1 - player];
-      // const x = i * w;
-      // const y = ((5 - n) * 3 + 2) * w;
-      // ctx.fillRect(x, y, w, w);
     }
   }
 }
