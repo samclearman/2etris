@@ -254,6 +254,7 @@ function copyOmino(o: Omino): Omino {
     nextFall: o.nextFall,
     speed: o.speed,
     boosted: o.boosted,
+    held: o.held,
   };
 }
 
