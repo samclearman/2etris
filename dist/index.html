@@ -94,7 +94,7 @@
         }
         #sidebar {
             position: absolute;
-            left: -120px;
+            left: -280px;
             right: 0;
             top: 0;
             bottom: 0;
@@ -171,6 +171,13 @@
         #l4 { color: rgb(0,255,255); }
         #l5 { color: rgb(0,0,255); }
         #l6 { color: rgb(255,0,255); }
+        /* #hold { */
+        /*     width: 80px; */
+        /*     border: 2px solid; */
+        /*     padding-top: 5px; */
+        /*     padding-bottom: 5px; */
+        /*     border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30; */
+        /* } */
     </style>
 </head>
 <body>
@@ -184,7 +191,8 @@
          <p>Points are scored for making lines.  As the game speeds up, your score multiplier increases.</p>
         <p class="silly">(To play head to head, simply ignore the score and try to cause the other player to lose.)</p>
         <p>Control your pieces with the arrow keys.</p>-->
-      <canvas id="preview" width="80" height="340" />
+        <canvas id="hold" width="80" height="40"></canvas>
+        <canvas id="preview" width="80" height="340"> </canvas>
     </div>
     
     <div id="controls">

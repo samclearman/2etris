@@ -141,6 +141,23 @@ function renderPreview(ctx, game, player) {
   }
 }
 
+function renderHold(ctx, game, player) {
+  const s = game.hold[player];
+  if (s === null) {
+    return;
+  }
+  ctx.fillStyle = playerColors[player];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 2; j++) {
+      ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : "rgba(0,0,0,0)"; // playerColors[1 - player];
+      const x = i * w;
+      const y = j * w;
+      ctx.clearRect(x, y, w, w);
+      ctx.fillRect(x, y, w, w);
+    }
+  }
+}
+
 export function renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
@@ -207,11 +224,12 @@ export function registerControls({blackButton, whiteButton, easyButton, session}
   });
 }
 
-  export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx}, session) {
+export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
   renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
+    renderHold(holdCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
     renderScore({scoreOutput, linesOutput}, session.game);
   }
 };

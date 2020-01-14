@@ -45,6 +45,8 @@ function game() {
   const gameCtx = gameCanvas.getContext("2d");
   const previewCanvas = <HTMLCanvasElement>document.getElementById("preview");
   const previewCtx = previewCanvas.getContext("2d");
+  const holdCanvas = <HTMLCanvasElement>document.getElementById("hold");
+  const holdCtx = holdCanvas.getContext("2d");
   const overlay = document.getElementById("pregame");
   const blackButton = document.getElementById("black-button");
   const whiteButton = document.getElementById("white-button");
@@ -68,7 +70,7 @@ function game() {
     const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
 
     computeSession(session, t);
-    renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx}, session)
+    renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
     setTimeout(loop, 10);
   };
   loop();
