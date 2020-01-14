@@ -128,15 +128,16 @@ function renderPreview(ctx, game, player) {
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 2; j++) {
         const s = game.bag[player][game.bag[player].length - 1 - n]
-        ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : playerColors[1 - player];
+        ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : "rgba(0,0,0,0)"; // playerColors[1 - player];
         const x = i * w;
         const y = ((5 - n) * 3 + j) * w;
+        ctx.clearRect(x, y, w, w);
         ctx.fillRect(x, y, w, w);
       }
-      ctx.fillStyle = playerColors[1 - player];
-      const x = i * w;
-      const y = ((5 - n) * 3 + 2) * w;
-      ctx.fillRect(x, y, w, w);
+      // ctx.fillStyle = playerColors[1 - player];
+      // const x = i * w;
+      // const y = ((5 - n) * 3 + 2) * w;
+      // ctx.fillRect(x, y, w, w);
     }
   }
 }
