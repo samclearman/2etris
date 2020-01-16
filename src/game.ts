@@ -264,7 +264,7 @@ function newOmino(
   createdAt: number,
   shape = null,
 ) {
-  if (!shape) {
+  if (shape === null) {
     shape = game.bag[player].pop();
     if (game.bag[player].length < 7) {
       game.bag[player] = randomBag(game.rng[player]).concat(game.bag[player]);
