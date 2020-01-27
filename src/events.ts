@@ -149,4 +149,5 @@ export function prettyEvents(events: E[]) {
     }
     prettyEvent(e, start);
   }
+  console.log(`Current time is ${(Date.now() - start) / 1000}`);
 }

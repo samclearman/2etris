@@ -531,7 +531,7 @@ const boostHandler = function(e: Boost, game) {
   o.boosted = true;
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
-    o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
+    o.nextFall = e.time + (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
   }
   game.activeOminos[e.player] = o;
   return game;
@@ -577,7 +577,7 @@ const fallHandler = function(e: Fall | HardDrop, game) {
   }
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
-    o.nextFall += checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed;
+    o.nextFall = e.time + (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
     game.activeOminos[e.player] = o;
   } else {
     game = lock(game, o);
