@@ -24,9 +24,10 @@ function trigger(event, session) {
 
 const repeaters = { }
 
-function makeXRepeater(event) {
+function makeRepeater(event) {
   return function(e, session) {
-    if (repeaters[EventType.Move]) {
+    const code = e.code.toString()
+    if (repeaters[code]) {
       // this shouldn't happen
       return;
     }
@@ -34,19 +35,20 @@ function makeXRepeater(event) {
       trigger(event, session);
     }
     f();
-    repeaters[EventType.Move] = setTimeout(() => {
-      repeaters[EventType.Move] = setInterval(f, ARR);
+    repeaters[code] = setTimeout(() => {
+      repeaters[code] = setInterval(f, ARR);
     }, DAS);
   };
 }
 
-function removeXRepeater(e, session) {
-  if (!repeaters[EventType.Move]) {
+function removeRepeater(e, session) {
+  const code = e.code.toString()
+  if (!repeaters[code]) {
     // this shouldn't happen
     return;
   }
-  clearInterval(repeaters[EventType.Move]);
-  delete repeaters[EventType.Move];
+  clearInterval(repeaters[code]);
+  delete repeaters[code];
 }
 
 
@@ -80,18 +82,17 @@ const controls = {
       t: EventType.Rotate,
       direction: 1
     },
-    ArrowLeft: makeXRepeater({
+    ArrowLeft: makeRepeater({
       t: EventType.Move,
       direction: -1
     }),
-    ArrowRight: makeXRepeater({
+    ArrowRight: makeRepeater({
       t: EventType.Move,
       direction: 1
     }),
-    ArrowDown: {
-      // t: EventType.Boost,
-      t: EventType.Drop,
-    },
+    ArrowDown: makeRepeater({
+      t: EventType.Fall,
+    }),
     KeyZ: {
       t: EventType.Rotate,
       direction: -1,
@@ -118,8 +119,9 @@ const controls = {
     }
   },
   keyup: {
-    ArrowLeft: removeXRepeater,
-    ArrowRight: removeXRepeater,
+    ArrowLeft: removeRepeater,
+    ArrowRight: removeRepeater,
+    ArrowDown: removeRepeater,
     // ArrowDown: {
     //   t: EventType.Unboost,
     // },
