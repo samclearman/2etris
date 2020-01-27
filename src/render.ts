@@ -3,6 +3,8 @@ import { SessionState } from './session';
 import { EventType, createEvent } from './events';
 
 const w = 20;
+const DAS = 133;
+const ARR = 50;
 
 const playerColors = {
   [Player.One]: "black",
@@ -13,6 +15,39 @@ const playerGhostColors = {
   [Player.One]: "#DDDDDD",
   [Player.Two]: "#333333"
 };
+
+function trigger(event, session) {
+  const { me } = session;
+  const player = session.claims[Player.One] === me ? Player.One : Player.Two
+  const e = createEvent(Object.assign({ player }, event), session)
+}
+
+const repeaters = { }
+
+function makeXRepeater(event) {
+  return function(e, session) {
+    if (repeaters[EventType.Move]) {
+      // this shouldn't happen
+      return;
+    }
+    const f = function() {
+      trigger(event, session);
+    }
+    f();
+    repeaters[EventType.Move] = setTimeout(() => {
+      repeaters[EventType.Move] = setInterval(f, ARR);
+    }, DAS);
+  };
+}
+
+function removeXRepeater(e, session) {
+  if (!repeaters[EventType.Move]) {
+    // this shouldn't happen
+    return;
+  }
+  clearInterval(repeaters[EventType.Move]);
+  delete repeaters[EventType.Move];
+}
 
 
 const controls = {
@@ -45,14 +80,14 @@ const controls = {
       t: EventType.Rotate,
       direction: 1
     },
-    ArrowLeft: {
+    ArrowLeft: makeXRepeater({
       t: EventType.Move,
       direction: -1
-    },
-    ArrowRight: {
+    }),
+    ArrowRight: makeXRepeater({
       t: EventType.Move,
       direction: 1
-    },
+    }),
     ArrowDown: {
       // t: EventType.Boost,
       t: EventType.Drop,
@@ -83,11 +118,13 @@ const controls = {
     }
   },
   keyup: {
+    ArrowLeft: removeXRepeater,
+    ArrowRight: removeXRepeater,
     // ArrowDown: {
     //   t: EventType.Unboost,
     // },
   },
-};;
+};
 
 function identity({x,y}) {
   return {x,y}
@@ -184,8 +221,9 @@ function renderScore({scoreOutput, linesOutput}, game) {
   linesOutput.textContent = game.lines;
 }
 
+
+
 export function registerControls({blackButton, whiteButton, easyButton, session}) {
-  const { me } = session;
   for (const eventName of ['keydown', 'keyup']) {
     window.addEventListener(eventName, function(e: KeyboardEvent) {
       if (e.repeat) {
@@ -194,14 +232,12 @@ export function registerControls({blackButton, whiteButton, easyButton, session}
       if (!(e.code.toString() in controls[eventName])) {
         return;
       }
-      const player = session.claims[Player.One] === me ? Player.One : Player.Two
-      let events = controls[eventName][e.code.toString()];
-      if (!Array.isArray(events)) {
-        events = [events];
+      if (typeof controls[eventName][e.code.toString()] === 'function') {
+        controls[eventName][e.code.toString()](e, session);
+        return;
       }
-      for (event of events) {
-        const e = createEvent(Object.assign({ player }, event), session)
-      }
+      const event = controls[eventName][e.code.toString()];
+      trigger(event, session);
       e.preventDefault();
     });
   }
