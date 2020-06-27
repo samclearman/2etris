@@ -1,5 +1,17 @@
-import * as seedrandom from 'seedrandom';
-import { EventType, Init, Spawn, Move, Rotate, Drop, Fall, HardDrop, Boost, Unboost } from './events';
+import * as seedrandom from "seedrandom";
+import {
+  EventType,
+  Init,
+  Spawn,
+  Move,
+  Rotate,
+  Drop,
+  Fall,
+  HardDrop,
+  Boost,
+  Unboost,
+  Hold,
+} from "./events";
 
 const LOCK_DELAY = 500;
 const gridWidth = 10;
@@ -9,10 +21,10 @@ export const gridOuterHeight = gridHeight + 2 * gridBuffer;
 
 export enum Player {
   One,
-  Two
+  Two,
 }
 
-type Vector = { dx: number, dy: number };
+type Vector = { dx: number; dy: number };
 
 type Direction = 1 | -1;
 
@@ -23,30 +35,58 @@ export enum Shape {
   L,
   T,
   S,
-  Z
+  Z,
 }
 
 type Mask = number[][];
 
 export const masks = {
-  [Shape.I]: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+  [Shape.I]: [
+    [0, 0, 0, 0],
+    [1, 1, 1, 1],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ],
   // [Shape.O]: [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
-  [Shape.O]: [[1, 1], [1, 1]],
-  [Shape.J]: [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
-  [Shape.L]: [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
-  [Shape.T]: [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
-  [Shape.S]: [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
-  [Shape.Z]: [[1, 1, 0], [0, 1, 1], [0, 0, 0]]
+  [Shape.O]: [
+    [1, 1],
+    [1, 1],
+  ],
+  [Shape.J]: [
+    [1, 0, 0],
+    [1, 1, 1],
+    [0, 0, 0],
+  ],
+  [Shape.L]: [
+    [0, 0, 1],
+    [1, 1, 1],
+    [0, 0, 0],
+  ],
+  [Shape.T]: [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 0, 0],
+  ],
+  [Shape.S]: [
+    [0, 1, 1],
+    [1, 1, 0],
+    [0, 0, 0],
+  ],
+  [Shape.Z]: [
+    [1, 1, 0],
+    [0, 1, 1],
+    [0, 0, 0],
+  ],
 };
 
 const spawnOffsets = {
-  [Shape.I]: { x: 0, y: -2},
-  [Shape.O]: { x: 0, y: -2},
-  [Shape.J]: { x: 0, y: -2},
-  [Shape.L]: { x: 0, y: -2},
-  [Shape.T]: { x: 0, y: -2},
-  [Shape.S]: { x: 0, y: -2},
-  [Shape.Z]: { x: 0, y: -2},  
+  [Shape.I]: { x: 0, y: -2 },
+  [Shape.O]: { x: 0, y: -2 },
+  [Shape.J]: { x: 0, y: -2 },
+  [Shape.L]: { x: 0, y: -2 },
+  [Shape.T]: { x: 0, y: -2 },
+  [Shape.S]: { x: 0, y: -2 },
+  [Shape.Z]: { x: 0, y: -2 },
 };
 
 function spawnOffset(shape: Shape) {
@@ -64,7 +104,7 @@ function kicks(omino, direction) {
         { dx: -1, dy: 0 },
         { dx: -1, dy: 1 },
         { dx: 0, dy: -2 },
-        { dx: -1, dy: -2 }
+        { dx: -1, dy: -2 },
       ];
     } else if (omino.rotation - direction === 1) {
       return [
@@ -72,7 +112,7 @@ function kicks(omino, direction) {
         { dx: 1, dy: 0 },
         { dx: 1, dy: -1 },
         { dx: 0, dy: 2 },
-        { dx: 1, dy: 2 }
+        { dx: 1, dy: 2 },
       ];
     } else if (omino.rotation === 3) {
       return [
@@ -80,7 +120,7 @@ function kicks(omino, direction) {
         { dx: 1, dy: 0 },
         { dx: 1, dy: 1 },
         { dx: 0, dy: -2 },
-        { dx: 1, dy: -2 }
+        { dx: 1, dy: -2 },
       ];
     } else if ((omino.rotation - direction + 4) % 4 === 3) {
       return [
@@ -88,7 +128,7 @@ function kicks(omino, direction) {
         { dx: -1, dy: 0 },
         { dx: -1, dy: -1 },
         { dx: 0, dy: 2 },
-        { dx: -1, dy: 2 }
+        { dx: -1, dy: 2 },
       ];
     } else {
       throw "that shouldn't happen";
@@ -103,7 +143,7 @@ function kicks(omino, direction) {
         { dx: -2, dy: 0 },
         { dx: 1, dy: 0 },
         { dx: -2, dy: -1 },
-        { dx: 1, dy: 2 }
+        { dx: 1, dy: 2 },
       ];
     } else if (
       (omino.rotation === 0 && direction === -1) ||
@@ -114,7 +154,7 @@ function kicks(omino, direction) {
         { dx: 2, dy: 0 },
         { dx: -1, dy: 0 },
         { dx: 2, dy: 1 },
-        { dx: -1, dy: -2 }
+        { dx: -1, dy: -2 },
       ];
     } else if (
       (omino.rotation === 2 && direction === 1) ||
@@ -125,7 +165,7 @@ function kicks(omino, direction) {
         { dx: -1, dy: 0 },
         { dx: 2, dy: 0 },
         { dx: -1, dy: 2 },
-        { dx: 2, dy: -1 }
+        { dx: 2, dy: -1 },
       ];
     } else if (
       (omino.rotation === 1 && direction === -1) ||
@@ -136,7 +176,7 @@ function kicks(omino, direction) {
         { dx: 1, dy: 0 },
         { dx: -2, dy: 0 },
         { dx: 1, dy: -2 },
-        { dx: -2, dy: 1 }
+        { dx: -2, dy: 1 },
       ];
     } else {
       throw "that shouldn't happen";
@@ -158,10 +198,11 @@ interface Omino {
   nextFall: number;
   speed: number;
   boosted: boolean;
+  held: boolean;
 }
 
 function copyMask(m: Mask) {
-  return m.map(r => r.map(b => b));
+  return m.map((r) => r.map((b) => b));
 }
 
 function rotatedMask(mask: Mask, d: 1 | -1): Mask {
@@ -217,7 +258,11 @@ export function globalCoordPositions(omino: Omino, { dx, dy }: Vector) {
   return positions;
 }
 
-export function globalCoordGhostPositions(game, omino: Omino, { dx, dy }: Vector) {
+export function globalCoordGhostPositions(
+  game,
+  omino: Omino,
+  { dx, dy }: Vector
+) {
   const positions = [];
 
   const o = copyOmino(omino);
@@ -241,7 +286,6 @@ export function globalCoordGhostPositions(game, omino: Omino, { dx, dy }: Vector
   return positions;
 }
 
-
 function copyOmino(o: Omino): Omino {
   return {
     id: o.id,
@@ -258,12 +302,7 @@ function copyOmino(o: Omino): Omino {
   };
 }
 
-function newOmino(
-  game,
-  player: Player,
-  createdAt: number,
-  shape = null,
-) {
+function newOmino(game, player: Player, createdAt: number, shape = null) {
   if (shape === null) {
     shape = game.bag[player].pop();
     if (game.bag[player].length < 7) {
@@ -298,12 +337,12 @@ function level(game) {
 
 function speed(game) {
   const l = level(game) - 1;
-  return 1000 * ((0.8 - (l * 0.007)) ** l);
+  return 1000 * (0.8 - l * 0.007) ** l;
 }
 
 export function newGame(e: Init) {
   const rng1 = seedrandom(e.seed);
-  const rng2 = seedrandom(e.seed.split('').reverse().join(''));
+  const rng2 = seedrandom(e.seed.split("").reverse().join(""));
   const bag1 = randomBag(rng1);
   const bag2 = randomBag(rng2);
   const game = {
@@ -362,7 +401,7 @@ export function newGame(e: Init) {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
     nextOminoId: {
       [Player.One]: 0,
@@ -379,11 +418,10 @@ export function newGame(e: Init) {
   };
   game.activeOminos = {
     [Player.One]: newOmino(game, Player.One, e.time),
-    [Player.Two]: newOmino(game, Player.Two, e.time)
+    [Player.Two]: newOmino(game, Player.Two, e.time),
   };
   return game;
-};
-
+}
 
 function checkCollision(game, omino, { dx, dy }) {
   for (const { x, y } of globalCoordPositions(omino, { dx, dy })) {
@@ -420,27 +458,27 @@ function clearLine(game, player, y) {
 }
 
 function score(game, lines) {
-  return [0,100,300,500,800][lines] * level(game);
+  return [0, 100, 300, 500, 800][lines] * level(game);
 }
 
 function get(a, i, j, d = 0) {
   if (a[i]) {
     if (a[i].length > j) {
-        return a[i][j];
-      }
+      return a[i][j];
     }
+  }
   return d;
 }
 
 function fill(grid, color, start, directions) {
-  const mask = grid.map(r => r.map(c => 0));
-  const m = (i,j) => get(mask, i, j);
-  const g = (i,j) => get(grid, i, j, -1);
-  const queue = [start]
+  const mask = grid.map((r) => r.map((c) => 0));
+  const m = (i, j) => get(mask, i, j);
+  const g = (i, j) => get(grid, i, j, -1);
+  const queue = [start];
   let coords;
-  while (coords = queue.pop()) {
+  while ((coords = queue.pop())) {
     const [i, j] = coords;
-    if (m(i,j)) {
+    if (m(i, j)) {
       continue;
     }
     if (g(i, j) === color) {
@@ -450,15 +488,25 @@ function fill(grid, color, start, directions) {
       }
     }
   }
-  
+
   return mask;
 }
 
 function checkConnectivity(game, omino) {
-  const directions = [[0,1],[0,-1],[1,0],[-1,0]];
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+  ];
   const m = fill(game.grid, 1, [0, 0], directions);
   const m1 = fill(m, 0, [m.length - 1, m[0].length - 1], directions);
-  const n = fill(game.grid, 0, [game.grid.length - 1, game.grid[0].length - 1], directions);
+  const n = fill(
+    game.grid,
+    0,
+    [game.grid.length - 1, game.grid[0].length - 1],
+    directions
+  );
   const n1 = fill(n, 0, [0, 0], directions);
   for (let i = 0; i < m1.length; i++) {
     for (let j = 0; j < m1[i].length; j++) {
@@ -474,14 +522,18 @@ function lock(game, omino) {
   const yToCheck = new Set();
   for (const { x, y } of globalCoordPositions(omino, { dx: 0, dy: 0 })) {
     // Todo: the grid should extend beyond the visible area, this check should happen at the end of lock
-    if (y < 0 || y >= gridHeight + (2 * gridBuffer)) {
+    if (y < 0 || y >= gridHeight + 2 * gridBuffer) {
       game.over = true;
       return game;
     }
     game.grid[y][x] = omino.player;
     yToCheck.add(y);
   }
-  if (Array.from(yToCheck).filter(y => y >= gridBuffer && y < gridHeight + gridBuffer).length === 0) {
+  if (
+    Array.from(yToCheck).filter(
+      (y) => y >= gridBuffer && y < gridHeight + gridBuffer
+    ).length === 0
+  ) {
     game.over = true;
     return game;
   }
@@ -510,9 +562,9 @@ function randomShape(rng: () => number) {
 }
 
 function randomBag(rng: () => number) {
-  const bag = [0,1,2,3,4,5,6];
+  const bag = [0, 1, 2, 3, 4, 5, 6];
   for (let i = 0; i < 7; i++) {
-    const n = i +  Math.floor(rng() * (7 - i));
+    const n = i + Math.floor(rng() * (7 - i));
     const x = bag[n];
     bag[n] = bag[i];
     bag[i] = x;
@@ -520,7 +572,7 @@ function randomBag(rng: () => number) {
   return bag as Shape[];
 }
 
-const boostHandler = function(e: Boost, game) {
+const boostHandler = function (e: Boost, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   // We don't need to check the omino here since boost is idempotent.
   game.boosted[e.player] = true;
@@ -531,16 +583,18 @@ const boostHandler = function(e: Boost, game) {
   o.boosted = true;
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
-    o.nextFall = e.time + (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
+    o.nextFall =
+      e.time +
+      (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
   }
   game.activeOminos[e.player] = o;
   return game;
-}
+};
 
-const unboostHandler = function(e: Unboost, game) {
+const unboostHandler = function (e: Unboost, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   // We don't need to check the omino here since unboost is idempotent.
-  game.boosted[e.player] = false
+  game.boosted[e.player] = false;
   if (!o.boosted) {
     return game;
   }
@@ -548,9 +602,9 @@ const unboostHandler = function(e: Unboost, game) {
   o.boosted = false;
   game.activeOminos[e.player] = o;
   return game;
-}
+};
 
-const dropHandler = function(e: Drop | HardDrop, game) {
+const dropHandler = function (e: Drop | HardDrop, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
     // console.warn('Event targeted wrong omino');
@@ -569,7 +623,7 @@ const dropHandler = function(e: Drop | HardDrop, game) {
   return game;
 };
 
-const fallHandler = function(e: Fall | HardDrop, game) {
+const fallHandler = function (e: Fall | HardDrop, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
     // console.warn('Event targeted wrong omino');
@@ -577,24 +631,22 @@ const fallHandler = function(e: Fall | HardDrop, game) {
   }
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
-    o.nextFall = e.time + (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
+    o.nextFall =
+      e.time +
+      (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
     game.activeOminos[e.player] = o;
   } else {
     game = lock(game, o);
-    game.activeOminos[e.player] = newOmino(
-      game,
-      e.player,
-      e.time,
-    );
+    game.activeOminos[e.player] = newOmino(game, e.player, e.time);
   }
   return game;
 };
 
-const hardDropHandler = function(e: HardDrop, game) {
+const hardDropHandler = function (e: HardDrop, game) {
   return fallHandler(e, dropHandler(e, game));
-}
+};
 
-const holdHandler = function(e: Hold, game) {
+const holdHandler = function (e: Hold, game) {
   const o = copyOmino(game.activeOminos[e.player]);
   if (o.id !== e.omino) {
     // console.warn('Event targeted wrong omino');
@@ -604,12 +656,8 @@ const holdHandler = function(e: Hold, game) {
     return game;
   }
   if (game.hold[e.player] === null) {
-    game.hold[e.player] = o.shape
-    game.activeOminos[e.player] = newOmino(
-      game,
-      e.player,
-      e.time,
-    );
+    game.hold[e.player] = o.shape;
+    game.activeOminos[e.player] = newOmino(game, e.player, e.time);
     return game;
   }
   const oo = newOmino(game, e.player, e.time, game.hold[e.player]);
@@ -617,42 +665,44 @@ const holdHandler = function(e: Hold, game) {
   game.hold[e.player] = o.shape;
   game.activeOminos[e.player] = oo;
   return game;
-}
+};
 
 export const eventHandlers = {
-  [EventType.Spawn]: function(e: Spawn, game) {
-    game.activeOminos[e.player] = newOmino(
-      game,
-      e.player,
-      e.time,
-    );
+  [EventType.Spawn]: function (e: Spawn, game) {
+    game.activeOminos[e.player] = newOmino(game, e.player, e.time);
     return game;
   },
-  [EventType.Move]: function(e: Move, game) {
+  [EventType.Move]: function (e: Move, game) {
     const o = copyOmino(game.activeOminos[e.player]);
     if (o.id !== e.omino) {
       // console.warn('Event targeted wrong omino');
       return game;
     }
-    o.x += e.direction;
-    if (!checkCollision(game, o, { dx: 0, dy: 0 })) {
+    if (!checkCollision(game, o, { dx: e.direction, dy: 0 })) {
+      o.x += e.direction;
+      if (checkCollision(game, o, { dx: 0, dy: 1 })) {
+        o.nextFall = e.time + LOCK_DELAY;
+      }
       game.activeOminos[e.player] = o;
     }
     return game;
   },
-  [EventType.Rotate]: function(e: Rotate, game) {
+  [EventType.Rotate]: function (e: Rotate, game) {
     const o = copyOmino(game.activeOminos[e.player]);
     if (o.id !== e.omino) {
       // console.warn('Event targeted wrong omino');
       return game;
     }
-    o.rotation = (o.rotation + e.direction + 4) % 4 as 0 | 1 | 2 | 3;
+    o.rotation = ((o.rotation + e.direction + 4) % 4) as 0 | 1 | 2 | 3;
     o.mask = rotatedMask(o.mask, e.direction);
     for (const { dx, dy } of kicks(o, e.direction)) {
       if (!checkCollision(game, o, { dx, dy })) {
         o.x += dx;
         o.y += dy;
         game.activeOminos[e.player] = o;
+        if (checkCollision(game, o, { dx: 0, dy: 1 })) {
+          o.nextFall = e.time + LOCK_DELAY;
+        }
         return game;
       }
     }

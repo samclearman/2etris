@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app";
 
-import { Shape, eventHandlers } from './game';
+import { Shape, eventHandlers } from "./game";
 // Events
 
 export enum EventType {
@@ -91,17 +91,27 @@ export interface Claim extends IEvent {
 
 export interface Claim extends IEvent {
   t: EventType.Claim;
-  val: boolean,
+  val: boolean;
   player: number;
   both?: boolean;
 }
 
 export interface Hold extends IEvent {
   t: EventType.Hold;
+  omino: number;
   player: number;
 }
 
-export type E = Rotate | Move | Drop | HardDrop | Spawn | Fall | Init | Claim | Hold;
+export type E =
+  | Rotate
+  | Move
+  | Drop
+  | HardDrop
+  | Spawn
+  | Fall
+  | Init
+  | Claim
+  | Hold;
 
 export function tickEvent(o): Fall {
   return {
@@ -109,21 +119,32 @@ export function tickEvent(o): Fall {
     t: EventType.Fall,
     time: o.nextFall,
     player: o.player,
-    user: '',
+    user: "",
   };
 }
 
 export function processEvent(e: E, game) {
   if (!eventHandlers[e.t]) {
     console.warn(`Unsupported event: ${e.t}`);
-    return game
+    return game;
   }
   return eventHandlers[e.t](e, game);
 }
 
 export function createEvent(e, session) {
   // no types
-  if ([EventType.Rotate, EventType.Move, EventType.Drop, EventType.Fall, EventType.HardDrop, EventType.Boost, EventType.Unboost, EventType.Hold].includes(e.t)) {
+  if (
+    [
+      EventType.Rotate,
+      EventType.Move,
+      EventType.Drop,
+      EventType.Fall,
+      EventType.HardDrop,
+      EventType.Boost,
+      EventType.Unboost,
+      EventType.Hold,
+    ].includes(e.t)
+  ) {
     if (!session.game) {
       return null;
     }
@@ -137,7 +158,7 @@ export function createEvent(e, session) {
 }
 
 function prettyEvent(e, start = 0) {
-  const pretty = `t ${(e.time - start) / 1000}`
+  const pretty = `t ${(e.time - start) / 1000}`;
   console.log(pretty);
 }
 
