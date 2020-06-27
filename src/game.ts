@@ -14,6 +14,7 @@ import {
 } from "./events";
 
 const LOCK_DELAY = 500;
+const LOCK_MAX = 3000;
 const gridWidth = 10;
 export const gridHeight = 30;
 export const gridBuffer = 4;
@@ -199,6 +200,7 @@ interface Omino {
   speed: number;
   boosted: boolean;
   held: boolean;
+  lockMax: number;
 }
 
 function copyMask(m: Mask) {
@@ -299,6 +301,7 @@ function copyOmino(o: Omino): Omino {
     speed: o.speed,
     boosted: o.boosted,
     held: o.held,
+    lockMax: o.lockMax,
   };
 }
 
@@ -328,6 +331,7 @@ function newOmino(game, player: Player, createdAt: number, shape = null) {
     speed: v,
     boosted: game.boosted[player],
     held: false,
+    lockMax: createdAt,
   };
 }
 
@@ -617,6 +621,7 @@ const dropHandler = function (e: Drop | HardDrop, game) {
   drop -= 1;
   o.y += drop;
   if (drop !== 0) {
+    o.lockMax = e.time + LOCK_MAX;
     o.nextFall = e.time + LOCK_DELAY;
   }
   game.activeOminos[e.player] = o;
@@ -631,6 +636,7 @@ const fallHandler = function (e: Fall | HardDrop, game) {
   }
   if (!checkCollision(game, o, { dx: 0, dy: 1 })) {
     o.y += 1;
+    o.lockMax = e.time + LOCK_MAX;
     o.nextFall =
       e.time +
       (checkCollision(game, o, { dx: 0, dy: 1 }) ? LOCK_DELAY : o.speed);
@@ -681,7 +687,7 @@ export const eventHandlers = {
     if (!checkCollision(game, o, { dx: e.direction, dy: 0 })) {
       o.x += e.direction;
       if (checkCollision(game, o, { dx: 0, dy: 1 })) {
-        o.nextFall = e.time + LOCK_DELAY;
+        o.nextFall = Math.min(e.time + LOCK_DELAY, o.lockMax);
       }
       game.activeOminos[e.player] = o;
     }
@@ -701,7 +707,7 @@ export const eventHandlers = {
         o.y += dy;
         game.activeOminos[e.player] = o;
         if (checkCollision(game, o, { dx: 0, dy: 1 })) {
-          o.nextFall = e.time + LOCK_DELAY;
+          o.nextFall = Math.min(e.time + LOCK_DELAY, o.lockMax);
         }
         return game;
       }
