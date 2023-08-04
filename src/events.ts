@@ -1,5 +1,3 @@
-import * as firebase from "firebase/app";
-
 import { Shape, eventHandlers } from "./game";
 // Events
 
@@ -150,11 +148,12 @@ export function createEvent(e, session) {
     }
     e.omino = session.game.activeOminos[e.player].id;
   }
-  e.time = firebase.database.ServerValue.TIMESTAMP;
+  e.time = session.firebase.serverTime();
+  console.log(e.time);
   e.localTime = Date.now();
   e.user = session.me;
   e.parent = session.firebase.lastEvent;
-  session.firebase.eventsRef.push(e);
+  session.firebase.pushEvent(e);
 }
 
 function prettyEvent(e, start = 0) {

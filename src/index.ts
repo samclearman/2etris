@@ -1,6 +1,6 @@
-import * as firebase from "firebase/app";
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
 
-import "firebase/database";
 
 import { newSession, makeSession, computeSession } from './session';
 import { registerControls, renderSession } from './render';
@@ -14,8 +14,8 @@ var config = {
   storageBucket: "etris-ab596.appspot.com",
   messagingSenderId: "996840504095"
 };
-firebase.initializeApp(config);
-const db = firebase.database()
+const app = initializeApp(config);
+const db = getDatabase(app);
 
 // const output = document.getElementById("fb_test");
 // db.ref('text').on("value", snap => (output.innerText = snap.val()));
@@ -39,7 +39,7 @@ function game() {
     return;
   }
 
-  let session = newSession(u.searchParams.get('session'), me);
+  let session = newSession(u.searchParams.get('session'), me, db);
 
   const gameCanvas = <HTMLCanvasElement>document.getElementById("game");
   const gameCtx = gameCanvas.getContext("2d");

@@ -1,4 +1,4 @@
-import * as firebase from "firebase/app";
+import { serverTimestamp, ref, onValue, push } from 'firebase/database';
 
 import { Player, newGame } from './game';
 import { processEvent, E, EventType, tickEvent, createEvent } from './events';
@@ -18,22 +18,23 @@ const blankSession = {
   game: null
 };
 
-export function newSession(id, me) {
+export function newSession(id, me, db) {
   let timeOffset = 0;
 
-  const eventsRef = firebase.database().ref(`sessions/${id}`);
+  const eventsRef = ref(db, `sessions/${id}`);
   const s = Object.assign({
     me,
     events: [] as E[],
     easyMode: true,
     firebase: {
       lastEvent: null,
-      eventsRef,
-      timeOffset: 0
+      timeOffset: 0,
+      pushEvent: (e: E) => {push(eventsRef, e)},
+      serverTime: serverTimestamp,
     }
   }, blankSession);
   
-  eventsRef.on('value', function (snapshot) {
+  onValue(eventsRef, function (snapshot) {
     const v = snapshot.val();
     for (const k in v) {
       const e = v[k];
@@ -131,7 +132,7 @@ export function computeSession(session, end: number) {
 
 export function makeSession(me, db, callback) {
   const initialEvents: any = [{
-    time: firebase.database.ServerValue.TIMESTAMP,
+    time: serverTimestamp(),
     localTime: Date.now(),
     user: me,
     t: EventType.Init,
@@ -140,7 +141,7 @@ export function makeSession(me, db, callback) {
   const u = new URL(window.location.href);
   if (u.searchParams.has('test')) {
     initialEvents.push({
-      time: firebase.database.ServerValue.TIMESTAMP,
+      time: serverTimestamp(),
       localTime: Date.now(),
       user: me,
       t: EventType.Claim,
@@ -148,7 +149,7 @@ export function makeSession(me, db, callback) {
       both: true,
     });
   }
-  db.ref('sessions').push(initialEvents).then(ref => {
+  push(ref(db, 'sessions'), initialEvents).then(ref => {
     console.log(ref.key);
     const l = window.location
     const u = new URL(window.location.href)

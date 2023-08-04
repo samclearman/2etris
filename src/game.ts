@@ -535,7 +535,7 @@ function lock(game, omino) {
   }
   if (
     Array.from(yToCheck).filter(
-      (y) => y >= gridBuffer && y < gridHeight + gridBuffer
+      (y: number) => y >= gridBuffer && y < gridHeight + gridBuffer
     ).length === 0
   ) {
     game.over = true;
