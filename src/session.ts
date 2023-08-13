@@ -1,7 +1,9 @@
-import { serverTimestamp, ref, onValue, push } from 'firebase/database';
+import { serverTimestamp, ref, onValue, push, set } from 'firebase/database';
 
 import { Player, newGame } from './game';
 import { processEvent, E, EventType, tickEvent, createEvent } from './events';
+import { shortId } from './id';
+
 export enum SessionState {
   Claiming,
   Playing,
@@ -83,6 +85,11 @@ export function computeSession(session, end: number) {
     return tickEvent(n);
   };
   for (let next = nextEvent(); next && next.time < end; next = nextEvent()) {
+    if (next.t === EventType.NewSession) {
+      const u = new URL(window.location.href);
+      u.searchParams.set('session', next.id);
+      (window as Window).location = u.toString();
+    }
     if (next.t === EventType.Init) {
       session.seed = next.seed;
       continue;
@@ -149,11 +156,11 @@ export function makeSession(me, db, callback) {
       both: true,
     });
   }
-  push(ref(db, 'sessions'), initialEvents).then(ref => {
-    console.log(ref.key);
-    const l = window.location
+  const id = shortId();
+  set(ref(db, `sessions/${id}`), initialEvents).then(() => {
+    console.log(id);
     const u = new URL(window.location.href)
-    u.searchParams.set('session', ref.key)
+    u.searchParams.set('session', id)
     history.pushState(u.toString(), u.toString(), u.toString())
     callback();
   });

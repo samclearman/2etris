@@ -14,6 +14,7 @@ export enum EventType {
   Claim,
   ToggleEasy,
   Hold,
+  NewSession,
 }
 
 interface IEvent {
@@ -98,6 +99,11 @@ export interface Hold extends IEvent {
   t: EventType.Hold;
   omino: number;
   player: number;
+}
+
+export interface NewSession extends IEvent {
+  t: EventType.NewSession;
+  id: string;
 }
 
 export type E =

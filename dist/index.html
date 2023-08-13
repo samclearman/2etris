@@ -173,9 +173,10 @@
             font-size: 14px;
             background-color: beige;
             border: 1px solid black;
-            display: table;
+            /* display: table; */
             margin-top: 10px;
             margin-bottom: 10px;
+            padding: 3px;
         }
         #l1 { color: rgb(255,0,0); }
         #l2 { color: rgb(255,255,0); }
@@ -212,7 +213,7 @@
         <output id="score">1337</output>
         <label for="lines">Lines</label>
         <output id="lines">0</output>
-        <!-- <button id="reset_button" name="reset">New Game</button> -->
+        <button id="reset-button" name="reset">New Game</button>
     </div>
 
     <div id="pregame">
@@ -233,7 +234,7 @@
       
         
       <div class="instructions" id="instructions">
-        Your game link is <output id="link">Please wait...</output>
+        Your game link is <output id="link">Please wait...</output> <button id="copy-button">📋 Copy</button><br>
         Share the link with a friend. When both players have chosen a color, the game will begin!
       </div>
     </div>

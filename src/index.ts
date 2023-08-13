@@ -54,8 +54,10 @@ function game() {
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   const link = document.getElementById("link");
+  const resetButton = document.getElementById("reset-button");
+  const copyButton = document.getElementById("copy-button");
 
-  registerControls({blackButton, whiteButton, easyButton, session});
+  registerControls({blackButton, whiteButton, easyButton, session, resetButton, copyButton});
 
   // @ts-ignore
   if(self.DEBUG_SESSION) {

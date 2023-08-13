@@ -1,6 +1,7 @@
 import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions, masks } from './game';
 import { SessionState } from './session';
 import { EventType, createEvent } from './events';
+import { shortId } from './id';
 
 const w = 20;
 const DAS = 133;
@@ -225,7 +226,7 @@ function renderScore({scoreOutput, linesOutput}, game) {
 
 
 
-export function registerControls({blackButton, whiteButton, easyButton, session}) {
+export function registerControls({blackButton, whiteButton, easyButton, session, resetButton, copyButton}) {
   for (const eventName of ['keydown', 'keyup']) {
     window.addEventListener(eventName, function(e: KeyboardEvent) {
       if (e.repeat) {
@@ -260,6 +261,19 @@ export function registerControls({blackButton, whiteButton, easyButton, session}
       t: EventType.ToggleEasy,
       val: e.target.checked,
     }, session)
+  });
+  resetButton.addEventListener('click', function(e) {
+    createEvent({
+      t: EventType.NewSession,
+      id: shortId(),
+    }, session)
+  });
+  copyButton.addEventListener('click', function(e) {
+    // Does it really have to be this complicated?
+    const type = "text/plain";
+    const blob = new Blob([window.location.href], { type });
+    const data = [new ClipboardItem({ [type]: blob })];
+    navigator.clipboard.write(data).then(() => { copyButton.textContent = 'Copied!'; });
   });
 }
 
