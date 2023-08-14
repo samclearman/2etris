@@ -1,6 +1,5 @@
 /node_modules
-/dist
+/dist/main.js
 yarn.lock
 /.firebase
 .firebaserc
-firebase.json
