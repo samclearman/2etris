@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "rsync -r -u static/* dist/ && webpack",
     "start": "concurrently --kill-others 'webpack -w' 'serve -l 8000 dist'"
   },
   "author": "Sam Clearman",

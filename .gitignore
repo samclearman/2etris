@@ -1,5 +1,6 @@
+.DS_Store
 /node_modules
-/dist/main.js
+/dist
 yarn.lock
 /.firebase
 .firebaserc
