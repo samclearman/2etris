@@ -167,7 +167,7 @@
             font-size: 20px;
             text-align: justify;
         }
-        #link {
+        output {
             font-family: sans-serif;
             white-space: nowrap;
             font-size: 14px;
@@ -234,8 +234,12 @@
       
         
       <div class="instructions" id="instructions">
-        Your game link is <output id="link">Please wait...</output> <button id="copy-button">📋 Copy</button><br>
-        Share the link with a friend. When both players have chosen a color, the game will begin!
+        <p>
+          Share the game link with a friend &mdash; to join the game, all they need to do is visit the link. When both players have chosen a color, the game will begin!
+          Your game link is:<br />
+          <output id="link">Please wait...</output> <button id="copy-button">📋 Copy</button>
+        </p>
+        <p>If you can't easily share the link, your friend can go to 2etris.com and use the game code <output id="code">Please wait...</output> to join the game.</p>
       </div>
     </div>
     <canvas id="game" width="200" height="600"></canvas>

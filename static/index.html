@@ -185,6 +185,20 @@
         #l4 { color: rgb(0,255,255); }
         #l5 { color: rgb(0,0,255); }
         #l6 { color: rgb(255,0,255); }
+
+        #create-button {
+            font-size: 15pt;
+        }
+        #join-container {
+            border-top: 1px solid black;
+            padding-top: 20px;
+        }
+        #code-input-label {
+            font-size: 13pt;
+        }
+        #join-button, #code-input {
+            font-size: 12pt;
+        }
     </style>
 </head>
 <body>
@@ -194,14 +208,14 @@
   </div>
 
   <div id="pregame">
-      <div class="button-container" id="join-container">
-        <label for="join"></label>
-        <input id="code-input" type="text" placeholder="Game code, eg abc123de"></input>
-        <button id="join-button" name="join">Join an existing game</button>
-      </div>
-      <div class="button-container" id="create-container">
-        <button id="create-button" name="create">Create a new game</button>
-      </div>
+    <div class="button-container" id="create-container">
+      <button id="create-button">Create a new game</button>
+    </div>
+    <div class="button-container" id="join-container">
+      <label id="code-input-label" for="code-input">Have a game code?  Enter it here:</label>
+      <input id="code-input" type="text" placeholder="Game code, eg abc123de"></input>
+      <button id="join-button">Join an existing game</button>
+    </div>
   </div>
 </body>
 

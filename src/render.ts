@@ -199,7 +199,7 @@ function renderHold(ctx, game, player) {
   }
 }
 
-export function renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session) {
+export function renderClaimer({blackButton, whiteButton, easyButton, link, code, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
   }
@@ -217,6 +217,8 @@ export function renderClaimer({blackButton, whiteButton, easyButton, link, overl
   }
   easyButton.checked = session.easyMode;
   link.textContent = window.location.href;
+  const u = new URL(window.location.href);
+  code.textContent = u.searchParams.get('session')
 }
 
 function renderScore({scoreOutput, linesOutput}, game) {
@@ -277,8 +279,8 @@ export function registerControls({blackButton, whiteButton, easyButton, session,
   });
 }
 
-export function renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
-  renderClaimer({blackButton, whiteButton, easyButton, link, overlay}, session);
+export function renderSession({blackButton, whiteButton, easyButton, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
+  renderClaimer({blackButton, whiteButton, easyButton, link, code, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);

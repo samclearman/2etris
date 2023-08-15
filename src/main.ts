@@ -54,6 +54,7 @@ function game() {
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   const link = document.getElementById("link");
+  const code = document.getElementById("code");
   const resetButton = document.getElementById("reset-button");
   const copyButton = document.getElementById("copy-button");
 
@@ -72,7 +73,7 @@ function game() {
     const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
 
     computeSession(session, t);
-    renderSession({blackButton, whiteButton, easyButton, link, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
+    renderSession({blackButton, whiteButton, easyButton, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
     setTimeout(loop, 10);
   };
   loop();
