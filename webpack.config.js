@@ -3,7 +3,10 @@ const path = require("path");
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
-  entry: "./src/index.ts",
+  entry: {
+    'main': './src/main.ts',
+    'choose': './src/choose.ts',
+  },
   module: {
     rules: [
       {
@@ -17,7 +20,7 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"]
   },
   output: {
-    filename: "main.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist")
   }
 };
