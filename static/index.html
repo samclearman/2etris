@@ -152,6 +152,9 @@
             flex-direction: column;
             align-items: center;
         }
+        .button-container * {
+            margin-bottom: 5px;
+        }
         .details {
             font-size: 14px;
             width: 200px;
@@ -192,13 +195,12 @@
 
   <div id="pregame">
       <div class="button-container" id="join-container">
-        <label for="join">Join an existing game</label>
+        <label for="join"></label>
         <input id="code-input" type="text" placeholder="Game code, eg abc123de"></input>
-        <button id="join-button" name="join">Join</button>
+        <button id="join-button" name="join">Join an existing game</button>
       </div>
       <div class="button-container" id="create-container">
-        <label for="create">Create a new game</label>
-        <button id="create-button" name="create">Create</button>
+        <button id="create-button" name="create">Create a new game</button>
       </div>
   </div>
 </body>

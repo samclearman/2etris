@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rsync -r -u static/* dist/ && webpack",
-    "start": "concurrently --kill-others 'webpack -w' 'serve -l 8000 dist'"
+    "start": "concurrently --kill-others 'fswatch -0or static | xargs -0 -n 1 -I {} rsync -r -u static/* dist/' 'webpack -w' 'serve -l 8000 dist'"
   },
   "author": "Sam Clearman",
   "license": "ISC",
