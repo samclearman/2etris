@@ -13,6 +13,7 @@ export enum EventType {
   Init,
   Claim,
   ToggleEasy,
+  SetLevel,
   Hold,
   NewSession,
 }
@@ -79,6 +80,7 @@ export interface Fall extends IEvent {
 export interface Init extends IEvent {
   t: EventType.Init;
   easyMode: boolean;
+  startingLevel: number;
   seed: string;
 }
 

@@ -51,6 +51,7 @@ function game() {
   const blackButton = document.getElementById("black-button");
   const whiteButton = document.getElementById("white-button");
   const easyButton = document.getElementById("easy-button");
+  const levelPicker = document.getElementById("level-picker");
   const scoreOutput = document.getElementById("score");
   const linesOutput = document.getElementById("lines");
   const link = document.getElementById("link");
@@ -58,7 +59,7 @@ function game() {
   const resetButton = document.getElementById("reset-button");
   const copyButton = document.getElementById("copy-button");
 
-  registerControls({blackButton, whiteButton, easyButton, session, resetButton, copyButton});
+  registerControls({blackButton, whiteButton, easyButton, levelPicker, session, resetButton, copyButton});
 
   // @ts-ignore
   if(self.DEBUG_SESSION) {
@@ -73,7 +74,7 @@ function game() {
     const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
 
     computeSession(session, t);
-    renderSession({blackButton, whiteButton, easyButton, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
+    renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
     setTimeout(loop, 10);
   };
   loop();

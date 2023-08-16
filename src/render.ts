@@ -199,7 +199,7 @@ function renderHold(ctx, game, player) {
   }
 }
 
-export function renderClaimer({blackButton, whiteButton, easyButton, link, code, overlay}, session) {
+export function renderClaimer({blackButton, whiteButton, easyButton, levelPicker, link, code, overlay}, session) {
   if (session.state !== SessionState.Claiming) {
     overlay.style.display = 'none';
   }
@@ -216,6 +216,9 @@ export function renderClaimer({blackButton, whiteButton, easyButton, link, code,
     }
   }
   easyButton.checked = session.easyMode;
+  if (document.activeElement !== levelPicker) {
+    levelPicker.value = session.startingLevel;
+  }
   link.textContent = window.location.href;
   const u = new URL(window.location.href);
   code.textContent = u.searchParams.get('session')
@@ -228,7 +231,7 @@ function renderScore({scoreOutput, linesOutput}, game) {
 
 
 
-export function registerControls({blackButton, whiteButton, easyButton, session, resetButton, copyButton}) {
+export function registerControls({blackButton, whiteButton, easyButton, levelPicker, session, resetButton, copyButton}) {
   for (const eventName of ['keydown', 'keyup']) {
     window.addEventListener(eventName, function(e: KeyboardEvent) {
       if (e.repeat) {
@@ -264,6 +267,17 @@ export function registerControls({blackButton, whiteButton, easyButton, session,
       val: e.target.checked,
     }, session)
   });
+  levelPicker.addEventListener('change', function(e) {
+    const level = parseInt(e.target.value);
+    console.log('level:', level)
+    if (!level) { // no such thing as level 0
+      return;
+    }
+    createEvent({
+      t: EventType.SetLevel,
+      val: level,
+    }, session)
+  });
   resetButton.addEventListener('click', function(e) {
     createEvent({
       t: EventType.NewSession,
@@ -279,8 +293,8 @@ export function registerControls({blackButton, whiteButton, easyButton, session,
   });
 }
 
-export function renderSession({blackButton, whiteButton, easyButton, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
-  renderClaimer({blackButton, whiteButton, easyButton, link, code, overlay}, session);
+export function renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
+  renderClaimer({blackButton, whiteButton, easyButton, levelPicker, link, code, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);

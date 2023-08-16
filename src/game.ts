@@ -336,7 +336,7 @@ function newOmino(game, player: Player, createdAt: number, shape = null) {
 }
 
 function level(game) {
-  return Math.floor(game.lines / 10) + 1;
+  return game.startingLevel + Math.floor(game.lines / 10);
 }
 
 function speed(game) {
@@ -355,6 +355,7 @@ export function newGame(e: Init) {
     active: true,
     over: false,
     easyMode: e.easyMode,
+    startingLevel: e.startingLevel,
     rng: {
       [Player.One]: rng1,
       [Player.Two]: rng2,

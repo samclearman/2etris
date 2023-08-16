@@ -28,6 +28,7 @@ export function newSession(id, me, db) {
     me,
     events: [] as E[],
     easyMode: true,
+    startingLevel: 1,
     firebase: {
       lastEvent: null,
       timeOffset: 0,
@@ -112,6 +113,7 @@ export function computeSession(session, end: number) {
           seed: session.seed,
           user: session.me,
           easyMode: session.easyMode,
+          startingLevel: session.startingLevel,
         })
         session.state = SessionState.Playing;
       }
@@ -121,6 +123,11 @@ export function computeSession(session, end: number) {
       session.easyMode = next.val;
       continue;
     }
+    if (next.t === EventType.SetLevel) {
+      session.startingLevel = next.val;
+      continue;
+    }
+
     if (session.state === SessionState.Playing) processEvent(next, session.game);
     if (session.game && session.game.over) session.state = SessionState.Over;
   }

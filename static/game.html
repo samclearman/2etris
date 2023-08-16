@@ -167,7 +167,7 @@
             font-size: 20px;
             text-align: justify;
         }
-        output {
+        #pregame output {
             font-family: sans-serif;
             white-space: nowrap;
             font-size: 14px;
@@ -225,6 +225,10 @@
       <div class="button-container" id="white-container">
         <label for="white">White</label>
         <input type="radio" name="color" id="white-button" />
+      </div>
+      <div class="button-container" id="level-container">
+        <label for="level">Starting level</label>
+        <input type="number" id="level-picker" name="level" min="1" max="14" value="1"/>
       </div>
       <div class="button-container" id="easy-mode-container">
         <label for="easy">Easy mode</label>
