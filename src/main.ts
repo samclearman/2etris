@@ -52,8 +52,9 @@ function game() {
   const whiteButton = document.getElementById("white-button");
   const easyButton = document.getElementById("easy-button");
   const levelPicker = document.getElementById("level-picker");
-  const scoreOutput = document.getElementById("score");
-  const linesOutput = document.getElementById("lines");
+  const scoreHeroOutput = document.getElementById("score-hero");
+  const scoreVillianOutput = document.getElementById("score-villian");
+  const levelOutput = document.getElementById("level");
   const link = document.getElementById("link");
   const code = document.getElementById("code");
   const resetButton = document.getElementById("reset-button");
@@ -74,7 +75,7 @@ function game() {
     const t = self.DEBUG_TIME || Date.now() + session.firebase.timeOffset;
 
     computeSession(session, t);
-    renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
+    renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreHeroOutput, scoreVillianOutput, levelOutput, overlay, gameCtx, previewCtx, holdCtx}, session)
     setTimeout(loop, 10);
   };
   loop();

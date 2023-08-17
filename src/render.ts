@@ -1,4 +1,4 @@
-import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions, masks } from './game';
+import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions, masks, level } from './game';
 import { SessionState } from './session';
 import { EventType, createEvent } from './events';
 import { shortId } from './id';
@@ -224,9 +224,12 @@ export function renderClaimer({blackButton, whiteButton, easyButton, levelPicker
   code.textContent = u.searchParams.get('session')
 }
 
-function renderScore({scoreOutput, linesOutput}, game) {
-  scoreOutput.textContent = game.score;
-  linesOutput.textContent = game.lines;
+function renderScore({scoreHeroOutput, scoreVillianOutput, levelOutput}, game, hero) {
+  for (const p in [Player.One, Player.Two]) {
+    const scoreOutput = p == hero ? scoreHeroOutput : scoreVillianOutput;
+    scoreOutput.textContent = `${game.scores[p]}`;
+  }
+  levelOutput.textContent = level(game);
 }
 
 
@@ -293,12 +296,12 @@ export function registerControls({blackButton, whiteButton, easyButton, levelPic
   });
 }
 
-export function renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreOutput, linesOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
+export function renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreHeroOutput, scoreVillianOutput, levelOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
   renderClaimer({blackButton, whiteButton, easyButton, levelPicker, link, code, overlay}, session);
   if (session.state === SessionState.Playing || session.state === SessionState.Over) {
     render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
     renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
     renderHold(holdCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
-    renderScore({scoreOutput, linesOutput}, session.game);
+    renderScore({scoreHeroOutput, scoreVillianOutput, levelOutput}, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
   }
 };

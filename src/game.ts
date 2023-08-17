@@ -335,7 +335,7 @@ function newOmino(game, player: Player, createdAt: number, shape = null) {
   };
 }
 
-function level(game) {
+export function level(game) {
   return game.startingLevel + Math.floor(game.lines / 10);
 }
 
@@ -351,7 +351,10 @@ export function newGame(e: Init) {
   const bag2 = randomBag(rng2);
   const game = {
     lines: 0,
-    score: 0,
+    scores: {
+      [Player.One]: 0,
+      [Player.Two]: 0,
+    },
     active: true,
     over: false,
     easyMode: e.easyMode,
@@ -551,7 +554,7 @@ function lock(game, omino) {
     }
   }
   game.lines += lines;
-  game.score += score(game, lines);
+  game.scores[omino.player] += score(game, lines);
   if (game.easyMode) {
     game = checkConnectivity(game, omino);
   }

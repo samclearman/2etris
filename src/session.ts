@@ -34,7 +34,8 @@ export function newSession(id, me, db) {
       timeOffset: 0,
       pushEvent: (e: E) => {push(eventsRef, e)},
       serverTime: serverTimestamp,
-    }
+    },
+    seed: null,
   }, blankSession);
   
   onValue(eventsRef, function (snapshot) {
@@ -58,6 +59,21 @@ export function newSession(id, me, db) {
     s.firebase.lastEvent = s.events.slice(-1)[0]._k;
     s.firebase.timeOffset = lastTen.length > 0 ? lastTen.map(e => e.time - e.localTime).reduce((x, y) => x + y) / lastTen.length: 0;
   })
+
+  setTimeout(() => {
+      if (s.seed) {
+        return;
+      }
+      s.firebase.pushEvent({
+        // @ts-ignore
+        time: serverTimestamp(),
+        localTime: Date.now(),
+        user: me,
+        t: EventType.Init,
+        seed: Math.random().toString(),
+      });
+    }, 1000
+  )
 
   return s;
 }
@@ -92,7 +108,18 @@ export function computeSession(session, end: number) {
       (window as Window).location = u.toString();
     }
     if (next.t === EventType.Init) {
-      session.seed = next.seed;
+      session.seed = session.seed ?? next.seed;
+      if (session.claims[Player.One] && session.claims[Player.Two] && session.seed) {
+        session.game = newGame({
+          time: next.time + 1000,
+          t: EventType.Init,
+          seed: session.seed,
+          user: session.me,
+          easyMode: session.easyMode,
+          startingLevel: session.startingLevel,
+        })
+        session.state = SessionState.Playing;
+      }
       continue;
     }
     if (next.t === EventType.Claim) {
@@ -106,7 +133,7 @@ export function computeSession(session, end: number) {
       if (next.both) {
         session.claims[1 - next.player] = next.user;
       }
-      if (session.claims[Player.One] && session.claims[Player.Two]) {
+      if (session.claims[Player.One] && session.claims[Player.Two] && session.seed) {
         session.game = newGame({
           time: next.time + 1000,
           t: EventType.Init,
