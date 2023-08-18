@@ -179,12 +179,65 @@
             margin-bottom: 10px;
             padding: 3px;
         }
-        #l1 { color: rgb(255,0,0); }
-        #l2 { color: rgb(255,255,0); }
-        #l3 { color: rgb(0,255,0); }
-        #l4 { color: rgb(0,255,255); }
-        #l5 { color: rgb(0,0,255); }
-        #l6 { color: rgb(255,0,255); }
+        #title span {
+            position: relative;
+        }
+        #l1 {
+            color: rgb(255,0,0);
+            animation-name: fall;
+            animation-delay: 7.83s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+        }
+        #l2 {
+            color: rgb(255,255,0);
+            animation-name: fall;
+            animation-delay: 4.68s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+        }
+        #l3 { color: rgb(0,255,0);
+            animation-name: fall;
+            animation-delay: 2.48s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+        }
+        #l4 {
+            color: rgb(0,255,255);
+            animation-name: fall;
+            animation-delay: 5.80s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+         }
+        #l5 {
+            color: rgb(0,0,255); 
+            animation-name: fall;
+            animation-delay: 3.80s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+        }
+        #l6 {
+            color: rgb(255,0,255); 
+            animation-name: fall;
+            animation-delay: 6.07s;
+            animation-duration: 10s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes fall {
+            from {
+                top: 0;
+            }
+            10% {
+                top: 100vh;
+            }
+            10.000000001% {
+                top: 0;
+            }
+            to {
+                top: 0;
+            }
+        }
 
         #create-button {
             font-size: 15pt;
