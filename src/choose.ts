@@ -1,16 +1,11 @@
-const joinButton = document.getElementById("join-button");
-const codeInput = document.getElementById("code-input") as HTMLInputElement;
-const createButton = document.getElementById("create-button");
+// The links and GET form also work without JavaScript.
+const panel = document.querySelector<HTMLDetailsElement>('#join-panel');
+const code = document.querySelector<HTMLInputElement>('#code-input');
 
-joinButton.addEventListener('click', function(e) {
-  const id = codeInput.value;
-  const u = new URL('/game', window.location.href);
-  u.searchParams.set('session', id);
-  (window as Window).location = u.toString();
+panel.addEventListener('toggle', () => { if (panel.open) code.focus(); });
+panel.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    panel.open = false;
+    panel.querySelector('summary').focus();
+  }
 });
-
-createButton.addEventListener('click', function(e) {
-  const u = new URL('/game', window.location.href);
-  (window as Window).location = u.toString();
-});
-

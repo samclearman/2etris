@@ -1,276 +1,33 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>REMEMBER THAT I AM EXIST</title>
-    <link rel="icon" type="image/png" href="logo.png"/>
-    <style type="text/css">
-        @font-face {
-            font-family: Wireframe;
-            src: url('wireframe.ttf');
-        }
-        @-webkit-keyframes pulse {
-              0% {background-color: #A55;}
-             20% {background-color: #AA5;}
-             40% {background-color: #5A5;}
-             60% {background-color: #5AA;}
-             80% {background-color: #55A;}
-             100% {background-color: #A5A;}
-        }
-        @keyframes pulse {
-              0% {background-color: #A55;}
-             20% {background-color: #AA5;}
-             40% {background-color: #5A5;}
-             60% {background-color: #5AA;}
-             80% {background-color: #55A;}
-             100% {background-color: #A5A;}
-        }
-        html {
-            margin: 0; padding: 0;
-            min-height:100%;
-            -webkit-animation: pulse 160s infinite alternate;
-            animation: pulse 160s infinite alternate;            
-        }
-        body{ margin: 0; padding: 0;}
-
-        
-        #game {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 200px;
-            height: 680px;
-            margin: auto;
-        }
-
-        #keyboard {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            width: fit-content;
-            height: fit-content;
-            background-color: white;
-            padding: 10px;
-            border: 3px solid;
-            border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30;
-        }
-
-        #title {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        
-        #pregame {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 1;
-            font-size: 20px;
-        }
-
-        #pregame>* {
-            margin: 20px;
-        }
-
-        #pregame input {
-        }
-        
-        #controls {
-            position: absolute;
-            left: 550px;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 280px;
-            height: 120px;
-            margin: auto;
-            font-family: Helvetica, sans-serif;
-        }
-        #controls label {
-            color: black;
-        }
-        #controls output {
-            display: block;
-            color: white;
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-        #sidebar {
-            position: absolute;
-            left: -280px;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 280px;
-            height: 680px;
-            margin: auto;
-            font-size: 18px;
-            font-family: Times;
-            color: #444444;
-        }
-        .silly {
-            font-size: 14px;
-        }
-        em {
-            color: rgb(0,0,0);
-        }
-        .white {
-            color: white;
-        }
-        .black {
-            color: black;
-        }
-        h1 {
-            font-family: Wireframe;
-            font-size: 80px;
-            margin:0; padding: 0;
-            margin-top: -20px;
-        }
-        h2 {
-            width: 200px;
-            left: 50%;
-            text-align: center;
-            font-family: Helvetica, sans-serif;
-            padding: 5px;
-            border: 3px solid;
-            background: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(10,0,255),  rgb(255,0,255));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30;
-        }
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .button-container * {
-            margin-bottom: 5px;
-        }
-        .details {
-            font-size: 14px;
-            width: 200px;
-            text-align: justify;
-        }
-        #instructions {
-            border-top: 1px solid black;
-            padding-top: 20px;
-            padding-right: 10px;
-            padding-left: 10px;
-            width: 400px;
-            font-size: 20px;
-            text-align: justify;
-        }
-        #link {
-            font-family: sans-serif;
-            white-space: nowrap;
-            font-size: 14px;
-            background-color: beige;
-            border: 1px solid black;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding: 3px;
-        }
-        #title span {
-            position: relative;
-        }
-        #l1 {
-            color: rgb(255,0,0);
-            animation-name: fall;
-            animation-delay: 7.83s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-        #l2 {
-            color: rgb(255,255,0);
-            animation-name: fall;
-            animation-delay: 4.68s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-        #l3 { color: rgb(0,255,0);
-            animation-name: fall;
-            animation-delay: 2.48s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-        #l4 {
-            color: rgb(0,255,255);
-            animation-name: fall;
-            animation-delay: 5.80s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-         }
-        #l5 {
-            color: rgb(0,0,255); 
-            animation-name: fall;
-            animation-delay: 3.80s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-        #l6 {
-            color: rgb(255,0,255); 
-            animation-name: fall;
-            animation-delay: 6.07s;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-
-        @keyframes fall {
-            from {
-                top: 0;
-            }
-            10% {
-                top: 100vh;
-            }
-            10.000000001% {
-                top: 0;
-            }
-            to {
-                top: 0;
-            }
-        }
-
-        #create-button {
-            font-size: 15pt;
-        }
-        #join-container {
-            border-top: 1px solid black;
-            padding-top: 20px;
-        }
-        #code-input-label {
-            font-size: 13pt;
-        }
-        #join-button, #code-input {
-            font-size: 12pt;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17132c">
+  <title>2etris · Faultline Arcade</title>
+  <link rel="icon" href="/art/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/faultline.css">
+  <script defer src="/choose.js"></script>
 </head>
-<body>
-
-  <div id="title">
-    <h1><span id="l1">2</span><span id="l2">e</span><span id="l3">t</span><span id="l4">r</span><span id="l5">i</span><span id="l6">s</span></h1>
-  </div>
-
-  <div id="pregame">
-    <div class="button-container" id="create-container">
-      <button id="create-button">Create a new game</button>
+<body class="attract">
+  <main class="scene title-scene">
+    <div class="scene-inner">
+      <p class="eyebrow">2 player puzzle</p>
+      <h1 class="marquee"><img src="/art/marquee.svg" alt="2etris"></h1>
+      <nav class="start-menu" aria-label="Play 2etris">
+        <a id="create-button" class="menu-item primary-choice" href="/game">Create game</a>
+        <details id="join-panel">
+          <summary class="menu-item">Join with a code</summary>
+          <form action="/game" method="get" class="join-form panel">
+            <label for="code-input">Game code</label>
+            <div class="entry-row">
+              <input id="code-input" name="session" type="text" placeholder="8-character code" required spellcheck="false" autocapitalize="none" autocomplete="off">
+              <button id="join-button" class="button" type="submit">Join →</button>
+            </div>
+          </form>
+        </details>
+      </nav>
     </div>
-    <div class="button-container" id="join-container">
-      <label id="code-input-label" for="code-input">Have a game code?  Enter it here:</label>
-      <input id="code-input" type="text" placeholder="Game code, eg abc123de"></input>
-      <button id="join-button">Join an existing game</button>
-    </div>
-  </div>
+  </main>
 </body>
-
-<script src="choose.js"></script>
 </html>

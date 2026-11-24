@@ -1,5 +1,4 @@
-import { Shape, eventHandlers } from "./game";
-// Events
+import type { Shape } from "./game";
 
 export enum EventType {
   Rotate,
@@ -90,13 +89,6 @@ export interface Claim extends IEvent {
   both?: boolean;
 }
 
-export interface Claim extends IEvent {
-  t: EventType.Claim;
-  val: boolean;
-  player: number;
-  both?: boolean;
-}
-
 export interface Hold extends IEvent {
   t: EventType.Hold;
   omino: number;
@@ -129,35 +121,8 @@ export function tickEvent(o): Fall {
   };
 }
 
-export function processEvent(e: E, game) {
-  if (!eventHandlers[e.t]) {
-    console.warn(`Unsupported event: ${e.t}`);
-    return game;
-  }
-  return eventHandlers[e.t](e, game);
-}
-
 export function createEvent(e, session) {
-  // no types
-  if (
-    [
-      EventType.Rotate,
-      EventType.Move,
-      EventType.Drop,
-      EventType.Fall,
-      EventType.HardDrop,
-      EventType.Boost,
-      EventType.Unboost,
-      EventType.Hold,
-    ].includes(e.t)
-  ) {
-    if (!session.game) {
-      return null;
-    }
-    e.omino = session.game.activeOminos[e.player].id;
-  }
   e.time = session.firebase.serverTime();
-  console.log(e.time);
   e.localTime = Date.now();
   e.user = session.me;
   e.parent = session.firebase.lastEvent;

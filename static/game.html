@@ -1,272 +1,65 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>REMEMBER THAT I AM EXIST</title>
-    <style type="text/css">
-        @font-face {
-            font-family: Wireframe;
-            src: url('wireframe.ttf');
-        }
-        @-webkit-keyframes pulse {
-              0% {background-color: #A55;}
-             20% {background-color: #AA5;}
-             40% {background-color: #5A5;}
-             60% {background-color: #5AA;}
-             80% {background-color: #55A;}
-             100% {background-color: #A5A;}
-        }
-        @keyframes pulse {
-              0% {background-color: #A55;}
-             20% {background-color: #AA5;}
-             40% {background-color: #5A5;}
-             60% {background-color: #5AA;}
-             80% {background-color: #55A;}
-             100% {background-color: #A5A;}
-        }
-        html {
-            margin: 0; padding: 0;
-            min-height:100%;
-            -webkit-animation: pulse 160s infinite alternate;
-            animation: pulse 160s infinite alternate;            
-        }
-        body{ margin: 0; padding: 0;}
-
-        
-        #game {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 200px;
-            height: 680px;
-            margin: auto;
-        }
-
-        #keyboard {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            width: fit-content;
-            height: fit-content;
-            background-color: white;
-            padding: 10px;
-            border: 3px solid;
-            border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30;
-        }
-
-        #title {
-            text-align: center;
-        }
-
-        /* #game { */
-        /*     display: none; */
-        /* } */
-        
-        #pregame {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 1;
-            font-size: 20px;
-        }
-
-        #pregame>* {
-            margin: 20px;
-        }
-
-        #pregame input {
-        }
-        
-        #controls {
-            position: absolute;
-            left: 550px;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 280px;
-            height: 120px;
-            margin: auto;
-            font-family: Helvetica, sans-serif;
-        }
-        #controls label {
-            color: black;
-        }
-        #controls output {
-            display: block;
-            color: white;
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-        #sidebar {
-            position: absolute;
-            left: -280px;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 280px;
-            height: 680px;
-            margin: auto;
-            font-size: 18px;
-            font-family: Times;
-            color: #444444;
-        }
-        .silly {
-            font-size: 14px;
-        }
-        em {
-            color: rgb(0,0,0);
-        }
-        .white {
-            color: white;
-        }
-        .black {
-            color: black;
-        }
-        h1 {
-            font-family: Wireframe;
-            font-size: 80px;
-            margin:0; padding: 0;
-            margin-top: -20px;
-        }
-        h2 {
-            width: 200px;
-            left: 50%;
-            text-align: center;
-            font-family: Helvetica, sans-serif;
-            padding: 5px;
-            border: 3px solid;
-            background: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(10,0,255),  rgb(255,0,255));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30;
-        }
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .details {
-            font-size: 14px;
-            width: 200px;
-            text-align: justify;
-        }
-        #instructions {
-            border-top: 1px solid black;
-            padding-top: 20px;
-            padding-right: 10px;
-            padding-left: 10px;
-            width: 400px;
-            font-size: 20px;
-            text-align: justify;
-        }
-        #pregame output {
-            font-family: sans-serif;
-            white-space: nowrap;
-            font-size: 14px;
-            background-color: beige;
-            border: 1px solid black;
-            /* display: table; */
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding: 3px;
-        }
-        #l1 { color: rgb(255,0,0); }
-        #l2 { color: rgb(255,255,0); }
-        #l3 { color: rgb(0,255,0); }
-        #l4 { color: rgb(0,255,255); }
-        #l5 { color: rgb(0,0,255); }
-        #l6 { color: rgb(255,0,255); }
-        /* #hold { */
-        /*     width: 80px; */
-        /*     border: 2px solid; */
-        /*     padding-top: 5px; */
-        /*     padding-bottom: 5px; */
-        /*     border-image: linear-gradient(45deg, rgb(255,0,0),  rgb(255,255,0),  rgb(0,255,0),  rgb(0,255,255),  rgb(0,0,255),  rgb(255,0,255)) 30; */
-        /* } */
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17132c">
+  <title>2etris · Game room</title>
+  <link rel="icon" href="/art/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/faultline.css">
+  <script defer src="/main.js"></script>
 </head>
 <body>
+  <main>
+    <section id="room-error" class="scene lobby" hidden>
+      <div class="scene-inner lobby-inner"><div class="panel room-panel" role="alert">
+        <h1>Room unavailable</h1><p id="room-error-message" class="room-status"></p>
+        <a class="text-link" href="/">Back to title</a>
+      </div></div>
+    </section>
+    <section id="pregame" class="scene lobby" aria-labelledby="invite-title">
+      <div class="scene-inner lobby-inner">
+        <img class="room-logo" src="/art/marquee.svg" alt="2etris">
+        <div class="panel room-panel">
+          <h1 id="invite-title">Waiting for player two</h1>
+          <label for="link">Invite a friend to play</label>
+          <textarea id="link" rows="2" readonly spellcheck="false" placeholder="Preparing game link…"></textarea>
+          <button type="button" class="button" id="copy-button" disabled>Copy link</button>
+          <p id="copy-status" class="hint" role="status"></p>
+        </div>
+      </div>
+    </section>
 
-  <div id="title">
-    <h1><span id="l1">2</span><span id="l2">e</span><span id="l3">t</span><span id="l4">r</span><span id="l5">i</span><span id="l6">s</span></h1>
-  </div>
-    
-    <div id="sidebar">
-        <!--<p>For one or two players.  <em>Two players recommended!</em></p>
-         <p>Points are scored for making lines.  As the game speeds up, your score multiplier increases.</p>
-        <p class="silly">(To play head to head, simply ignore the score and try to cause the other player to lose.)</p>
-        <p>Control your pieces with the arrow keys.</p>-->
-        <canvas id="hold" width="80" height="40"></canvas>
-        <canvas id="preview" width="80" height="340"> </canvas>
-    </div>
-    
-    <div id="controls">
-        <label for="score-hero">You</label>
-        <output id="score-hero">1337</output>
-        <label for="score-villian">Them</label>
-        <output id="score-villian">420</output>
-        <label for="level">Level</label>
-        <output id="level">0</output>
-        <button id="reset-button" name="reset">New Game</button>
-    </div>
+    <section id="match" class="match" aria-label="Match field" hidden>
+      <div class="cabinet">
+        <aside class="console left-console" aria-label="Scoreboard">
+          <img class="small-logo" src="/art/marquee.svg" alt="2etris">
+          <div class="ledger">
+            <div class="meter" id="hero-meter"><label for="score-hero">You · <span id="hero-color"></span></label><div class="digits"><output id="score-hero" aria-live="off">0</output><svg id="hero-display" viewBox="0 0 23 5" aria-hidden="true" focusable="false"><path/></svg></div></div>
+            <div class="meter" id="rival-meter"><label for="score-villian">Them · <span id="rival-color"></span></label><div class="digits"><output id="score-villian" aria-live="off">0</output><svg id="rival-display" viewBox="0 0 23 5" aria-hidden="true" focusable="false"><path/></svg></div></div>
+            <div class="meter level"><label for="level">Level</label><output id="level" aria-live="off">1</output></div>
+          </div>
+          <details class="keys"><summary>Controls</summary>
+            <dl><dt>Move</dt><dd>← / →</dd><dt>Soft drop</dt><dd>↓</dd><dt>Hard drop</dt><dd>Space</dd><dt>Rotate right</dt><dd>↑ / X</dd><dt>Rotate left</dt><dd>Ctrl / Z</dd><dt>Hold</dt><dd>Shift / C</dd></dl>
+          </details>
+        </aside>
+        <div class="bezel"><canvas id="game" tabindex="-1" width="200" height="600" aria-label="Shared 10 by 30 field with opposing pieces and landing guides"></canvas></div>
+        <aside class="console right-console" aria-label="Piece information">
+          <div class="rack"><h2>Hold</h2><canvas id="hold" width="80" height="40" aria-label="Held piece"></canvas></div>
+          <div class="rack"><h2>Next</h2><canvas id="preview" width="80" height="340" aria-label="Six next pieces, next at the bottom"></canvas><p class="queue-key">↑ Play order</p></div>
+          <div class="match-actions"><button type="button" id="show-result" class="text-link" hidden>Final scores</button><button type="button" id="reset-button" class="text-link" data-new-game>New game</button></div>
+        </aside>
+      </div>
+    </section>
 
-    <div id="pregame">
-      <h2>Choose any color you like!</h2>
-      <div class="button-container" id="black-container">
-        <label for="black">Black</label>
-        <input type="radio" name="color" id="black-button" />
+    <section id="result" class="result" aria-labelledby="result-title" hidden>
+      <div class="result-inner">
+        <h1 id="result-title" tabindex="-1"><img src="/art/game-over.svg" alt="Game over"></h1>
+        <dl class="final-scores"><div><dt>You · <span id="final-hero-color"></span></dt><dd id="final-hero"></dd></div><div><dt>Them · <span id="final-rival-color"></span></dt><dd id="final-rival"></dd></div></dl>
+        <p class="final-level">Final level <strong id="final-level"></strong></p>
+        <div class="result-actions"><button type="button" class="button" data-new-game>New game →</button><button type="button" class="text-link" id="view-field">View final field</button></div>
       </div>
-      <div class="button-container" id="white-container">
-        <label for="white">White</label>
-        <input type="radio" name="color" id="white-button" />
-      </div>
-      <div class="button-container" id="level-container">
-        <label for="level">Starting level</label>
-        <input type="number" id="level-picker" name="level" min="1" max="14" value="1"/>
-      </div>
-      <div class="button-container" id="easy-mode-container">
-        <label for="easy">Easy mode</label>
-        <input type="checkbox" name="easy" id="easy-button" checked/>
-        <p class="details">(With easy mode on, disconnected regions will be automatically cleared)</p>
-      </div>
-      
-        
-      <div class="instructions" id="instructions">
-        <p>
-          Share the game link with a friend &mdash; to join the game, all they need to do is visit the link. When both players have chosen a color, the game will begin!
-          Your game link is:<br />
-          <output id="link">Please wait...</output> <button id="copy-button">📋 Copy</button>
-        </p>
-        <p>If you can't easily share the link, your friend can go to 2etris.com and use the game code <output id="code">Please wait...</output> to join the game.</p>
-      </div>
-    </div>
-    <canvas id="game" width="200" height="600"></canvas>
-
-    <div id="keyboard">
-      <table>
-        <tr><td>Move left</td><td>&larr;</td></tr>
-        <tr><td>Move right</td><td>&rarr;</td></tr>
-        <tr><td>Rotate left</td><td>Ctrl</td><td>z</td></tr>
-        <tr><td>Rotate right</td><td>&uarr;</td><td>x</td></tr>
-        <tr><td>Hard drop</td><td>Space</td></tr>
-        <tr><td>Soft drop</td><td>&darr;</td></tr>
-        <tr><td>Hold</td><td>Shift</td><td>c</td></tr>
-      </table>
-    </div>
+    </section>
+  </main>
 </body>
-
-<script>
-//   var DEBUG_EVENTS = true;
-//   var DEBUG_SESSION = true;
-</script>
-
-<script src="main.js"></script>
 </html>

@@ -1,4 +1,10 @@
 {
+  "database": { "rules": "database.rules.json" },
+  "emulators": {
+    "auth": { "host": "127.0.0.1", "port": 9099 },
+    "database": { "host": "127.0.0.1", "port": 9000 },
+    "ui": { "enabled": false }
+  },
   "hosting": {
     "public": "dist",
     "ignore": [

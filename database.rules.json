@@ -1,0 +1,42 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$room": {
+        ".validate": "$room.matches(/^[a-z0-9]{8}$/) && newData.hasChildren(['members', 'events'])",
+        "members": {
+          ".read": "auth != null && $room.matches(/^[a-z0-9]{8}$/)",
+          "host": {
+            ".write": "auth != null && !data.exists() && newData.val() === auth.uid && newData.parent().parent().child('events/0/t').val() === 8"
+          },
+          "guest": {
+            ".write": "auth != null && (!data.exists() || data.val() === auth.uid) && newData.val() === auth.uid && data.parent().child('host').isString() && data.parent().child('host').val() !== auth.uid"
+          },
+          "$other": { ".validate": false }
+        },
+        "events": {
+          ".read": "auth != null && (data.parent().child('members/host').val() === auth.uid || data.parent().child('members/guest').val() === auth.uid)",
+          "$event": {
+            ".write": "auth != null && !data.exists() && newData.exists() && newData.child('user').val() === auth.uid && (newData.parent().parent().child('members/host').val() === auth.uid || newData.parent().parent().child('members/guest').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['user','time','t','localTime']) && (($event === '0' && newData.child('t').val() === 8 && newData.hasChild('seed')) || ($event !== '0' && ((newData.child('t').val() === 9 && newData.hasChild('player')) || ((newData.child('t').val() === 10 || newData.child('t').val() === 11) && newData.hasChild('val')) || (newData.child('t').val() === 13 && newData.hasChild('id')) || ((newData.child('t').val() === 0 || newData.child('t').val() === 1) && newData.hasChildren(['omino','player','direction'])) || ((newData.child('t').val() === 3 || newData.child('t').val() === 7 || newData.child('t').val() === 12) && newData.hasChildren(['omino','player'])))))",
+            "user": { ".validate": "newData.val() === auth.uid" },
+            "t": { ".validate": "newData.isNumber()" },
+            "time": { ".validate": "newData.val() === now" },
+            "localTime": { ".validate": "newData.isNumber() && newData.val() > 0" },
+            "parent": { ".validate": "newData.isString() && newData.val().matches(/^[a-zA-Z0-9_-]{1,20}$/)" },
+            "seed": { ".validate": "newData.isString() && newData.val().length <= 64 && newData.parent().child('t').val() === 8" },
+            "player": { ".validate": "newData.val() === 0 || newData.val() === 1" },
+            "direction": { ".validate": "newData.val() === -1 || newData.val() === 1" },
+            "omino": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+            "val": { ".validate": "(newData.parent().child('t').val() === 10 && newData.isBoolean()) || (newData.parent().child('t').val() === 11 && newData.isNumber() && newData.val() >= 1 && newData.val() <= 14 && newData.val() % 1 === 0)" },
+            "id": { ".validate": "newData.parent().child('t').val() === 13 && newData.isString() && newData.val().matches(/^[a-z0-9]{8}$/)" },
+            "both": { ".validate": "$event === '1' && !data.parent().parent().exists() && newData.parent().child('t').val() === 9 && newData.val() === true" },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

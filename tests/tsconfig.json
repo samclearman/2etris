@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "types": ["node", "seedrandom"],
+    "outDir": "./build",
+    "rootDir": "..",
+    "skipLibCheck": true
+  },
+  "include": [
+    "./*.ts",
+    "../src/game.ts",
+    "../src/events.ts",
+    "../src/session.ts",
+    "../src/render.ts",
+    "../src/controls.ts",
+    "../src/field.ts"
+  ]
+}

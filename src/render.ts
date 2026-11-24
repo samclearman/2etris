@@ -1,307 +1,130 @@
-import { Player, gridHeight, gridBuffer, gridOuterHeight, globalCoordPositions, globalCoordGhostPositions, masks, level } from './game';
+import { Player, level } from './game';
 import { SessionState } from './session';
-import { EventType, createEvent } from './events';
-import { shortId } from './id';
+import { FieldRenderer } from './field';
 
-const w = 20;
-const DAS = 133;
-const ARR = 50;
-
-const playerColors = {
-  [Player.One]: "black",
-  [Player.Two]: "white"
-};
-
-const playerGhostColors = {
-  [Player.One]: "#DDDDDD",
-  [Player.Two]: "#333333"
-};
-
-function trigger(event, session) {
-  const { me } = session;
-  const player = session.claims[Player.One] === me ? Player.One : Player.Two
-  const e = createEvent(Object.assign({ player }, event), session)
+function el<T extends HTMLElement = HTMLElement>(id: string) {
+  return document.getElementById(id) as T;
+}
+function text(node: HTMLElement, value: string) {
+  if (node.textContent !== value) node.textContent = value;
 }
 
-const repeaters = { }
+// Original 3×5 cabinet numerals. The adjacent <output> holds the real score
+// for assistive technology; the six-digit treatment is purely visual.
+const numerals = [
+  '111101101101111', '010110010010111', '111001111100111', '111001111001111', '101101111001001',
+  '111100111001111', '111100111101111', '111001010010010', '111101111101111', '111101111001111',
+];
+class ScoreMeter {
+  private output: HTMLOutputElement;
+  private name: HTMLElement;
+  private meter: HTMLElement;
+  private display: SVGSVGElement;
+  private path: SVGPathElement;
+  private last: number;
 
-function makeRepeater(event) {
-  return function(e, session) {
-    const code = e.code.toString()
-    if (repeaters[code]) {
-      // this shouldn't happen
-      return;
-    }
-    const f = function() {
-      trigger(event, session);
-    }
-    f();
-    repeaters[code] = setTimeout(() => {
-      repeaters[code] = setInterval(f, ARR);
-    }, DAS);
-  };
-}
-
-function removeRepeater(e, session) {
-  const code = e.code.toString()
-  if (!repeaters[code]) {
-    // this shouldn't happen
-    return;
+  constructor(prefix: string, outputId: string) {
+    this.output = el(outputId);
+    this.name = el(`${prefix}-color`);
+    this.meter = el(`${prefix}-meter`);
+    this.display = document.querySelector(`#${prefix}-display`);
+    this.path = this.display.querySelector('path');
   }
-  clearInterval(repeaters[code]);
-  delete repeaters[code];
-}
 
-
-const controls = {
-  // Test controls
-  // KeyS: {
-  //   t: EventType.Rotate,
-  //   player: Player.Two,
-  //   direction: 1
-  // },
-  // KeyQ: {
-  //   t: EventType.Move,
-  //   player: Player.Two,
-  //   direction: -1
-  // },
-  // KeyW: {
-  //   t: EventType.Drop,
-  //   player: Player.Two
-  // },
-  // KeyE: {
-  //   t: EventType.Move,
-  //   player: Player.Two,
-  //   direction: 1
-  // },
-  keydown: {
-    ArrowUp: {
-      t: EventType.Rotate,
-      direction: 1
-    },
-    KeyX: {
-      t: EventType.Rotate,
-      direction: 1
-    },
-    ArrowLeft: makeRepeater({
-      t: EventType.Move,
-      direction: -1
-    }),
-    ArrowRight: makeRepeater({
-      t: EventType.Move,
-      direction: 1
-    }),
-    ArrowDown: makeRepeater({
-      t: EventType.Fall,
-    }),
-    KeyZ: {
-      t: EventType.Rotate,
-      direction: -1,
-    },
-    ControlLeft: {
-      t: EventType.Rotate,
-      direction: -1,
-    },
-    ControlRight: {
-      t: EventType.Rotate,
-      direction: -1,
-    },
-    Space: {
-      t: EventType.HardDrop,
-    },
-    KeyC: {
-      t: EventType.Hold,
-    },
-    ShiftLeft: {
-      t: EventType.Hold,
-    },
-    ShiftRight: {
-      t: EventType.Hold,
-    }
-  },
-  keyup: {
-    ArrowLeft: removeRepeater,
-    ArrowRight: removeRepeater,
-    ArrowDown: removeRepeater,
-    // ArrowDown: {
-    //   t: EventType.Unboost,
-    // },
-  },
-};
-
-function identity({x,y}) {
-  return {x,y}
-}
-
-function flip({x,y}) {
-  return {x, y: gridOuterHeight - 1 - y};
-}
-
-function render(ctx, game, transform) {
-  const square = function(x,y) {
-    ctx.fillRect(x * w, (y - gridBuffer) * w, w, w);
-  }
-  for (let i = gridBuffer; i < gridHeight + gridBuffer; i++) {
-    for (let j = 0; j < game.grid[i].length; j++) {
-      ctx.fillStyle = playerColors[game.grid[i][j]];
-      const { x, y } = transform({ x: j, y: i});
-      square(x, y);
-    }
-  }
-  for (const p in Player) {
-    const o = game.activeOminos[p];
-    if (!o) {
-      continue;
-    }
-    const ghostPositions = globalCoordGhostPositions(game, o, { dx: 0, dy: 0 }).map(p => transform(p));
-    ctx.fillStyle = playerGhostColors[p];
-    for (const { x, y } of ghostPositions) {
-      square(x, y);
-    }
-    const positions = globalCoordPositions(o, { dx: 0, dy: 0 }).map(p => transform(p));
-    ctx.fillStyle = playerColors[p];
-    for (const { x, y } of positions) {
-      square(x, y);
-    }
-  }
-}
-
-function renderPreview(ctx, game, player) {
-  ctx.fillStyle = playerColors[player];
-  for (let n = 0; n < 6; n++) {
-    for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < 2; j++) {
-        const s = game.bag[player][game.bag[player].length - 1 - n]
-        ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : "rgba(0,0,0,0)"; // playerColors[1 - player];
-        const x = i * w;
-        const y = ((5 - n) * 3 + j) * w;
-        ctx.clearRect(x, y, w, w);
-        ctx.fillRect(x, y, w, w);
-      }
-    }
-  }
-}
-
-function renderHold(ctx, game, player) {
-  const s = game.hold[player];
-  if (s === null) {
-    return;
-  }
-  ctx.fillStyle = playerColors[player];
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 2; j++) {
-      ctx.fillStyle = (masks[s][j][i]) ? playerColors[player] : "rgba(0,0,0,0)"; // playerColors[1 - player];
-      const x = i * w;
-      const y = j * w;
-      ctx.clearRect(x, y, w, w);
-      ctx.fillRect(x, y, w, w);
-    }
-  }
-}
-
-export function renderClaimer({blackButton, whiteButton, easyButton, levelPicker, link, code, overlay}, session) {
-  if (session.state !== SessionState.Claiming) {
-    overlay.style.display = 'none';
-  }
-  for (const [player, button] of [[Player.One, blackButton], [Player.Two, whiteButton]]) {
-    if (session.claims[player] === session.me) {
-      button.checked = true;
-      button.disabled = false;
-    } else if (session.claims[player]) {
-      button.checked = false;
-      button.disabled = true;
-    } else {
-      button.checked = false;
-      button.disabled = false;
-    }
-  }
-  easyButton.checked = session.easyMode;
-  if (document.activeElement !== levelPicker) {
-    levelPicker.value = session.startingLevel;
-  }
-  link.textContent = window.location.href;
-  const u = new URL(window.location.href);
-  code.textContent = u.searchParams.get('session')
-}
-
-function renderScore({scoreHeroOutput, scoreVillianOutput, levelOutput}, game, hero) {
-  for (const p in [Player.One, Player.Two]) {
-    const scoreOutput = p == hero ? scoreHeroOutput : scoreVillianOutput;
-    scoreOutput.textContent = `${game.scores[p]}`;
-  }
-  levelOutput.textContent = level(game);
-}
-
-
-
-export function registerControls({blackButton, whiteButton, easyButton, levelPicker, session, resetButton, copyButton}) {
-  for (const eventName of ['keydown', 'keyup']) {
-    window.addEventListener(eventName, function(e: KeyboardEvent) {
-      if (e.repeat) {
-        return;
-      }
-      if (!(e.code.toString() in controls[eventName])) {
-        return;
-      }
-      if (typeof controls[eventName][e.code.toString()] === 'function') {
-        controls[eventName][e.code.toString()](e, session);
-        return;
-      }
-      const event = controls[eventName][e.code.toString()];
-      trigger(event, session);
-      e.preventDefault();
+  update(score: number, side: string) {
+    text(this.name, side);
+    if (this.meter.dataset.side !== side) this.meter.dataset.side = side;
+    if (score === this.last) return;
+    this.last = score;
+    this.output.value = String(score);
+    const digits = String(score).padStart(6, '0');
+    let d = '';
+    Array.from(digits).forEach((digit, i) => {
+      Array.from(numerals[Number(digit)] ?? '').forEach((pixel, j) => {
+        if (pixel === '1') d += `M${i * 4 + j % 3} ${Math.floor(j / 3)}h1v1h-1z`;
+      });
     });
+    this.display.setAttribute('viewBox', `0 0 ${digits.length * 4 - 1} 5`);
+    this.path.setAttribute('d', d);
   }
-  blackButton.addEventListener('change', function(e) {
-    createEvent({
-      t: EventType.Claim,
-      player: Player.One,
-    }, session)
-  });
-  whiteButton.addEventListener('change', function(e) {
-    createEvent({
-      t: EventType.Claim,
-      player: Player.Two,
-    }, session)
-  });
-  easyButton.addEventListener('change', function(e) {
-    createEvent({
-      t: EventType.ToggleEasy,
-      val: e.target.checked,
-    }, session)
-  });
-  levelPicker.addEventListener('change', function(e) {
-    const level = parseInt(e.target.value);
-    console.log('level:', level)
-    if (!level) { // no such thing as level 0
-      return;
-    }
-    createEvent({
-      t: EventType.SetLevel,
-      val: level,
-    }, session)
-  });
-  resetButton.addEventListener('click', function(e) {
-    createEvent({
-      t: EventType.NewSession,
-      id: shortId(),
-    }, session)
-  });
-  copyButton.addEventListener('click', function(e) {
-    // Does it really have to be this complicated?
-    const type = "text/plain";
-    const blob = new Blob([window.location.href], { type });
-    const data = [new ClipboardItem({ [type]: blob })];
-    navigator.clipboard.write(data).then(() => { copyButton.textContent = 'Copied!'; });
-  });
 }
 
-export function renderSession({blackButton, whiteButton, easyButton, levelPicker, link, code, scoreHeroOutput, scoreVillianOutput, levelOutput, overlay, gameCtx, previewCtx, holdCtx}, session) {
-  renderClaimer({blackButton, whiteButton, easyButton, levelPicker, link, code, overlay}, session);
-  if (session.state === SessionState.Playing || session.state === SessionState.Over) {
-    render(gameCtx, session.game, session.claims[Player.One] === session.me ? identity : flip);
-    renderPreview(previewCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
-    renderHold(holdCtx, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
-    renderScore({scoreHeroOutput, scoreVillianOutput, levelOutput}, session.game, session.claims[Player.One] === session.me ? Player.One : Player.Two);
+export class Cabinet {
+  private lobby = el('pregame');
+  private match = el('match');
+  private result = el('result');
+  private link = el<HTMLTextAreaElement>('link');
+  private hero = new ScoreMeter('hero', 'score-hero');
+  private rival = new ScoreMeter('rival', 'score-villian');
+  private level = el('level');
+  private board = el<HTMLCanvasElement>('game');
+  private field = new FieldRenderer(this.board.getContext('2d'), el<HTMLCanvasElement>('preview').getContext('2d'), el<HTMLCanvasElement>('hold').getContext('2d'));
+  private finalHero = el('final-hero');
+  private finalRival = el('final-rival');
+  private finalHeroColor = el('final-hero-color');
+  private finalRivalColor = el('final-rival-color');
+  private finalLevel = el('final-level');
+  private showResult = el('show-result');
+  private finalField = false;
+  private screen: HTMLElement;
+
+  constructor() {
+    // main mounts the cabinet only after the session ID is in the URL.
+    this.link.value = window.location.href;
+    el<HTMLButtonElement>('copy-button').disabled = false;
+    el('copy-button').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(this.link.value);
+        text(el('copy-status'), 'Game link copied.');
+      } catch {
+        this.link.focus();
+        this.link.select();
+        text(el('copy-status'), 'Link selected. Copy it to invite a friend.');
+      }
+    });
+    el('view-field').addEventListener('click', () => { this.finalField = true; });
+    this.showResult.addEventListener('click', () => { this.finalField = false; });
   }
-};
+
+  private show(screen: HTMLElement) {
+    if (screen === this.screen) return;
+    this.screen = screen;
+    this.lobby.hidden = screen !== this.lobby;
+    this.match.hidden = screen !== this.match;
+    this.result.hidden = screen !== this.result;
+    if (screen === this.match) this.board.focus({ preventScroll: true });
+    if (screen === this.result) el('result-title').focus({ preventScroll: true });
+  }
+
+  draw(session) {
+    if (session.state === SessionState.Claiming) {
+      this.finalField = false;
+      this.show(this.lobby);
+      return;
+    }
+
+    const { game } = session;
+    const hero = session.claims[Player.One] === session.me ? Player.One : Player.Two;
+    const rival = 1 - hero;
+    const heroColor = hero === Player.One ? 'black' : 'white';
+    const rivalColor = hero === Player.One ? 'white' : 'black';
+    const currentLevel = String(level(game));
+    const over = session.state === SessionState.Over;
+    if (!over) this.finalField = false;
+    if (over && !this.finalField) {
+      this.show(this.result);
+      text(this.finalHeroColor, heroColor);
+      text(this.finalRivalColor, rivalColor);
+      text(this.finalHero, String(game.scores[hero]));
+      text(this.finalRival, String(game.scores[rival]));
+      text(this.finalLevel, currentLevel);
+    } else {
+      this.show(this.match);
+      if (this.showResult.hidden === over) this.showResult.hidden = !over;
+      this.field.draw(game, hero);
+      this.hero.update(game.scores[hero], heroColor);
+      this.rival.update(game.scores[rival], rivalColor);
+      text(this.level, currentLevel);
+    }
+  }
+}

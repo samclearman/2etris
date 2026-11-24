@@ -1,8 +1,11 @@
 const path = require("path");
 
-module.exports = {
+module.exports = (_env, argv) => ({
   mode: "development",
-  devtool: "inline-source-map",
+  plugins: [new (require('webpack').DefinePlugin)({
+    __LOCAL_FIREBASE__: JSON.stringify(process.env.FIREBASE_EMULATORS === '1'),
+  })],
+  devtool: argv.mode === 'production' ? false : 'inline-source-map',
   entry: {
     'main': './src/main.ts',
     'choose': './src/choose.ts',
@@ -23,4 +26,4 @@ module.exports = {
     filename: "[name].js",
     path: path.resolve(__dirname, "dist")
   }
-};
+});
