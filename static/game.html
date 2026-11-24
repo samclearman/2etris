@@ -22,11 +22,21 @@
         <img class="room-logo" src="/art/marquee.svg" alt="2etris">
         <div class="panel room-panel">
           <h1 id="invite-title">Waiting for player two</h1>
-          <label for="link">Invite a friend to play</label>
-          <textarea id="link" rows="2" readonly spellcheck="false" placeholder="Preparing game link…"></textarea>
-          <button type="button" class="button" id="copy-button" disabled>Copy link</button>
+          <div class="invite-row">
+            <div>
+              <label class="eyebrow" for="room-code">Room code</label>
+              <div class="code-with-copy">
+                <output id="room-code">…</output>
+                <button type="button" id="copy-code" aria-label="Copy room code" title="Copy room code" disabled>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M10 2H2v9"/><path d="M6 6h8v8H6z"/></svg>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="button" id="copy-button" disabled>Copy link</button>
+          </div>
           <p id="copy-status" class="hint" role="status"></p>
         </div>
+        <img class="studio-signature" src="/art/titan-8bit.svg" width="120" height="26" alt="Titan">
       </div>
     </section>
 
@@ -58,6 +68,7 @@
         <dl class="final-scores"><div><dt>You · <span id="final-hero-color"></span></dt><dd id="final-hero"></dd></div><div><dt>Them · <span id="final-rival-color"></span></dt><dd id="final-rival"></dd></div></dl>
         <p class="final-level">Final level <strong id="final-level"></strong></p>
         <div class="result-actions"><button type="button" class="button" data-new-game>New game →</button><button type="button" class="text-link" id="view-field">View final field</button></div>
+        <img class="studio-signature" src="/art/titan-8bit.svg" width="120" height="26" alt="Titan">
       </div>
     </section>
   </main>

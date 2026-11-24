@@ -25,7 +25,9 @@ img { display: block; max-width: 100%; }
 }
 .scene-inner { max-width: 1540px; margin-inline: auto; padding: clamp(38px, 7vh, 90px) var(--gutter); }
 .eyebrow { color: var(--cyan); }
-.title-scene .eyebrow::before { content: ''; display: inline-block; width: 28px; height: 6px; margin-right: 12px; background: repeating-linear-gradient(90deg,var(--cyan) 0 6px,transparent 6px 10px); }
+.studio-credit { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.studio-credit span { padding-left: 14px; border-left: 2px solid var(--line); }
+.studio-signature { margin-top: 32px; }
 .marquee { max-width: min(51%, 610px); margin: 20px 0 26px; }
 .marquee img, .result h1 img { width: 100%; }
 /* These elements receive focus on screen transitions, not as buttons. */
@@ -57,8 +59,11 @@ input[type=text] { min-width: 0; max-width: 100%; padding: 10px; background: #fc
 .room-panel h1 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); color: var(--gold); letter-spacing: -.07em; }
 .room-status, .hint { color: var(--muted); font-size: .86rem; line-height: 1.45; }
 .room-status { min-height: 2.8em; }
-#pregame label { display: block; margin: 16px 0 8px; color: var(--muted); }
-#link { display: block; width: 100%; resize: none; margin-bottom: 12px; padding: 8px; border: 1px solid var(--line); background: var(--void); color: var(--cyan); font: inherit; font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
+.invite-row { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.code-with-copy { display: flex; align-items: center; gap: 2px; }
+#copy-code { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: transparent; color: var(--cyan); }
+#copy-code:is(:hover, :focus-visible) { color: var(--gold); background: var(--glass); }
+#room-code { display: block; color: var(--ivory); font-size: clamp(1.25rem, 5.5vw, 1.6rem); font-weight: bold; letter-spacing: .08em; user-select: all; }
 #copy-status:not(:empty) { margin-top: 8px; }
 
 /* 10:30 is the visible field, without stretching the 20px square cells. */

@@ -53,7 +53,6 @@ export class Cabinet {
   private lobby = el('pregame');
   private match = el('match');
   private result = el('result');
-  private link = el<HTMLTextAreaElement>('link');
   private hero = new ScoreMeter('hero', 'score-hero');
   private rival = new ScoreMeter('rival', 'score-villian');
   private level = el('level');
@@ -68,20 +67,26 @@ export class Cabinet {
   private finalField = false;
   private screen: HTMLElement;
 
-  constructor() {
-    // main mounts the cabinet only after the session ID is in the URL.
-    this.link.value = window.location.href;
-    el<HTMLButtonElement>('copy-button').disabled = false;
-    el('copy-button').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(this.link.value);
-        text(el('copy-status'), 'Game link copied.');
-      } catch {
-        this.link.focus();
-        this.link.select();
-        text(el('copy-status'), 'Link selected. Copy it to invite a friend.');
-      }
-    });
+  constructor(roomCode: string) {
+    text(el('room-code'), roomCode);
+    const invite = new URL(window.location.pathname, window.location.origin);
+    invite.searchParams.set('session', roomCode);
+    const status = el('copy-status');
+    const bindCopy = (id: string, value: string, confirmation: string) => {
+      const button = el<HTMLButtonElement>(id);
+      button.disabled = false;
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          text(status, confirmation);
+        } catch {
+          window.getSelection()?.selectAllChildren(el('room-code'));
+          text(status, 'Room code selected. Use your device’s Copy command.');
+        }
+      });
+    };
+    bindCopy('copy-code', roomCode, 'Room code copied.');
+    bindCopy('copy-button', invite.href, 'Game link copied.');
     el('view-field').addEventListener('click', () => { this.finalField = true; });
     this.showResult.addEventListener('click', () => { this.finalField = false; });
   }

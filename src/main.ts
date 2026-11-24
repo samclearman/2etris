@@ -34,7 +34,7 @@ async function start() {
   }
 
   const session = newSession(id, me, db, showError);
-  const cabinet = new Cabinet();
+  const cabinet = new Cabinet(id);
   registerControls(session);
   // @ts-ignore Optional local debugging interface.
   if (self.DEBUG_SESSION) Object.assign(self, { DEBUG_SESSION: session, prettyEvents });
