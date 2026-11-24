@@ -30,6 +30,8 @@ img { display: block; max-width: 100%; }
 .studio-signature { margin-top: 32px; }
 .marquee { max-width: min(51%, 610px); margin: 20px 0 26px; }
 .marquee img, .result h1 img { width: 100%; }
+.home-link { display: block; width: fit-content; }
+.marquee .home-link { width: auto; }
 /* These elements receive focus on screen transitions, not as buttons. */
 #result-title:focus, #game:focus { outline: 0; }
 .start-menu { display: grid; gap: 10px; width: fit-content; max-width: 100%; }
@@ -39,7 +41,7 @@ img { display: block; max-width: 100%; }
 .menu-item::before { content: ''; width: .7em; height: .8em; flex: none; background: transparent; clip-path: polygon(0 0,33% 0,33% 20%,66% 20%,66% 36%,100% 36%,100% 62%,66% 62%,66% 81%,33% 81%,33% 100%,0 100%); }
 .primary-choice { color: var(--gold); background: #221637; }
 .primary-choice::before, details[open] > .menu-item::before, .menu-item:is(:hover,:focus-visible)::before { background: var(--gold); }
-.start-menu:has(details:is([open], :focus-within, :hover)) .primary-choice:not(:hover)::before { background: transparent; }
+.start-menu:has(details:is([open], :focus-within, :hover)) .primary-choice:not(:hover, :focus-visible)::before { background: transparent; }
 .menu-item:is(:hover,:focus-visible), details[open] > .menu-item { color: var(--gold); background: #34224d; }
 .panel { border: 2px solid var(--cobalt); box-shadow: 2px 2px var(--cyan), 6px 6px var(--void); background: var(--panel); }
 .join-form { margin-top: 12px; padding: 16px; width: min(365px, calc(100vw - 2 * var(--gutter))); }
@@ -107,7 +109,7 @@ canvas { display: block; height: auto; image-rendering: pixelated; }
   .room-panel { max-width: 395px; }
   .cabinet { --well: min(58vw, max(133px, calc((100svh - 210px) / 3)), 218px); grid-template-columns: var(--well) minmax(68px, 90px); grid-template-rows: auto 1fr auto; justify-content: center; gap: 16px clamp(15px, 4vw, 28px); padding: 14px 16px; background: none; }
   .left-console { display: contents; }
-  .small-logo { display: none; }
+  .left-console > .home-link { display: none; }
   .ledger { grid-column: 1 / -1; grid-row: 1; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 8px; margin: 0; padding: 0 0 4px; }
   .meter label { font-size: .68rem; letter-spacing: 0; margin-bottom: 4px; }
   .digits { padding: 5px 5px 4px; }
